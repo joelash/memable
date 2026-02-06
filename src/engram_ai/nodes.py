@@ -189,7 +189,7 @@ async def astore_memories_node(
     org_id = config["configurable"].get("org_id")
     scope = kwargs.get("scope", "memories")
     model = kwargs.get("model", "gpt-4.1-mini")
-    check_contradictions = kwargs.get("check_contradictions", True)
+    kwargs.get("check_contradictions", True)
 
     messages = state["messages"]
 

@@ -2,7 +2,7 @@
 Memory retrieval with recency weighting and context formatting.
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from engram_ai.schema import Durability, Memory, MemoryQuery
@@ -159,7 +159,7 @@ def _apply_recency_boost(
     if not memories:
         return memories
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     def recency_score(mem: Memory) -> float:
         # Use last_accessed_at if available, else created_at
@@ -192,7 +192,7 @@ def _update_access_stats(
 
     This helps with recency boosting and usage analytics.
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     for mem in memories:
         mem.last_accessed_at = now

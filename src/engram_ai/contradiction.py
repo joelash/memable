@@ -2,8 +2,7 @@
 Contradiction detection and resolution via version chains.
 """
 
-from datetime import datetime, timezone
-from typing import Any
+from datetime import UTC, datetime
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
@@ -39,7 +38,7 @@ You are checking if a new fact contradicts any existing memories.
 
 A contradiction exists when:
 - The new fact directly negates an old fact (e.g., "lives in Austin" vs "lives in Wheaton")
-- The new fact makes an old fact obsolete (e.g., "switched to TypeScript" vs "favorite language is Python")
+- The new fact makes an old fact obsolete (e.g., "now uses TypeScript" vs "prefers Python")
 - The new fact updates information that can only have one value (e.g., job, name, location)
 
 NOT contradictions:
@@ -201,7 +200,7 @@ def resolve_contradiction(
             text=new_fact,
             confidence=confidence,
             source=source,
-            valid_from=datetime.now(timezone.utc),
+            valid_from=datetime.now(UTC),
         ),
     )
 

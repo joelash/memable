@@ -2,8 +2,8 @@
 Memory schema with durability tiers, temporal awareness, and version chains.
 """
 
-from datetime import datetime, timezone
-from enum import Enum
+from datetime import UTC, datetime
+from enum import StrEnum
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -12,10 +12,10 @@ from pydantic import BaseModel, Field
 
 def _utc_now() -> datetime:
     """Return current time as timezone-aware UTC datetime."""
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
-class Durability(str, Enum):
+class Durability(StrEnum):
     """Memory durability tier."""
 
     CORE = "core"
@@ -28,7 +28,7 @@ class Durability(str, Enum):
     """Things that happened, decays over time (conversations, events)."""
 
 
-class MemorySource(str, Enum):
+class MemorySource(StrEnum):
     """How the memory was created."""
 
     EXPLICIT = "explicit"

@@ -3,7 +3,7 @@ Memory extraction from conversations using LLM.
 """
 
 import json
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
@@ -215,7 +215,7 @@ class MemoryExtractor:
         for fact in facts:
             valid_until = None
             if fact.valid_days is not None:
-                valid_until = datetime.now(timezone.utc) + timedelta(days=fact.valid_days)
+                valid_until = datetime.now(UTC) + timedelta(days=fact.valid_days)
 
             tags = []
             if fact.category:

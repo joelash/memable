@@ -2,9 +2,8 @@
 Memory consolidation: decay, summarize, and prune old memories.
 """
 
-from datetime import datetime, timezone, timedelta
-from enum import Enum
-from typing import Any
+from datetime import UTC, datetime, timedelta
+from enum import StrEnum
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
@@ -16,7 +15,7 @@ from engram_ai.store import SemanticMemoryStore
 DEFAULT_MODEL = "gpt-4.1-mini"
 
 
-class ConsolidationStrategy(str, Enum):
+class ConsolidationStrategy(StrEnum):
     """Memory consolidation strategies."""
 
     PRUNE_EXPIRED = "prune_expired"
@@ -128,7 +127,7 @@ def _prune_expired(
     memories = store.list_all(namespace, include_expired=True)
     result.memories_processed = len(memories)
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     for mem in memories:
         if mem.valid_until and mem.valid_until < now:
@@ -152,7 +151,7 @@ def _decay_access(
     memories = store.list_all(namespace)
     result.memories_processed = len(memories)
 
-    cutoff = datetime.now(timezone.utc) - timedelta(days=threshold_days)
+    cutoff = datetime.now(UTC) - timedelta(days=threshold_days)
 
     for mem in memories:
         # Only decay episodic memories
@@ -161,7 +160,8 @@ def _decay_access(
 
         last_access = mem.last_accessed_at or mem.created_at
         if last_access < cutoff:
-            result.details.append(f"Decayed (not accessed in {threshold_days}d): {mem.text[:50]}...")
+            msg = f"Decayed (not accessed in {threshold_days}d): {mem.text[:50]}..."
+            result.details.append(msg)
             if not dry_run:
                 store.delete(namespace, mem.id)
             result.memories_removed += 1
@@ -183,7 +183,7 @@ def _summarize_groups(
     memories = store.list_all(namespace)
     result.memories_processed = len(memories)
 
-    cutoff = datetime.now(timezone.utc) - timedelta(days=older_than_days)
+    cutoff = datetime.now(UTC) - timedelta(days=older_than_days)
 
     # Filter to old episodic memories
     old_episodic = [
@@ -192,7 +192,9 @@ def _summarize_groups(
     ]
 
     if len(old_episodic) < min_group_size:
-        result.details.append(f"Not enough old episodic memories to summarize ({len(old_episodic)} < {min_group_size})")
+        msg = "Not enough old episodic memories to summarize "
+        msg += f"({len(old_episodic)} < {min_group_size})"
+        result.details.append(msg)
         return result
 
     # Group by tags (simple clustering)
@@ -279,7 +281,7 @@ def _summarize_group(
                 tags=["consolidated"],
                 metadata={
                     "consolidated_from": [str(m.id) for m in memories],
-                    "consolidation_date": datetime.now(timezone.utc).isoformat(),
+                    "consolidation_date": datetime.now(UTC).isoformat(),
                 },
             ),
         )
