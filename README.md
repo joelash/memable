@@ -1,6 +1,16 @@
-# ai-semantic-memory
+<p align="center">
+  <img src="assets/logo.png" alt="ai-semantic-memory logo" width="200">
+</p>
 
-Reusable semantic memory library for LangGraph agents. Drop-in long-term memory with:
+<h1 align="center">ai-semantic-memory</h1>
+
+<p align="center">
+  <em>Reusable semantic memory library for LangGraph agents</em>
+</p>
+
+---
+
+Drop-in long-term memory with:
 
 - **Durability tiers** — core facts vs situational context vs episodic memories
 - **Temporal awareness** — validity windows, expiry, recency weighting
