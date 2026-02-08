@@ -2,7 +2,7 @@
 Unit tests for schema models.
 """
 
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 import pytest
@@ -23,7 +23,7 @@ class TestMemory:
     def test_memory_defaults(self):
         """Test default values for Memory."""
         mem = Memory(text="Test memory")
-        
+
         assert mem.text == "Test memory"
         assert mem.durability == Durability.EPISODIC
         assert mem.confidence == 0.8
@@ -43,7 +43,7 @@ class TestMemory:
     def test_memory_to_store_value(self, sample_memory):
         """Test serialization to store value dict."""
         value = sample_memory.to_store_value()
-        
+
         assert value["text"] == sample_memory.text
         assert value["durability"] == "core"
         assert value["confidence"] == 0.95
@@ -54,7 +54,7 @@ class TestMemory:
         """Test deserialization from store value dict."""
         value = sample_memory.to_store_value()
         restored = Memory.from_store_value(value)
-        
+
         assert restored.id == sample_memory.id
         assert restored.text == sample_memory.text
         assert restored.durability == sample_memory.durability
@@ -63,26 +63,26 @@ class TestMemory:
     def test_memory_is_valid_permanent(self):
         """Test is_valid for permanent memories."""
         mem = Memory(text="Permanent fact", valid_until=None)
-        
+
         assert mem.is_valid()
-        assert mem.is_valid(at=datetime.now(timezone.utc) + timedelta(days=365))
+        assert mem.is_valid(at=datetime.now(UTC) + timedelta(days=365))
 
     def test_memory_is_valid_expired(self):
         """Test is_valid for expired memories."""
         mem = Memory(
             text="Temporary fact",
-            valid_until=datetime.now(timezone.utc) - timedelta(days=1),
+            valid_until=datetime.now(UTC) - timedelta(days=1),
         )
-        
+
         assert not mem.is_valid()
 
     def test_memory_is_valid_future(self):
         """Test is_valid for memories with future start date."""
         mem = Memory(
             text="Future fact",
-            valid_from=datetime.now(timezone.utc) + timedelta(days=1),
+            valid_from=datetime.now(UTC) + timedelta(days=1),
         )
-        
+
         assert not mem.is_valid()
 
     def test_memory_is_valid_superseded(self):
@@ -91,14 +91,14 @@ class TestMemory:
             text="Old fact",
             superseded_by=uuid4(),
         )
-        
+
         assert not mem.is_valid()
         assert not mem.is_current()
 
     def test_memory_is_current(self):
         """Test is_current for non-superseded memories."""
         mem = Memory(text="Current fact")
-        
+
         assert mem.is_current()
 
 
@@ -108,7 +108,7 @@ class TestMemoryCreate:
     def test_memory_create_to_memory(self, sample_memory_create):
         """Test converting MemoryCreate to Memory."""
         mem = sample_memory_create.to_memory()
-        
+
         assert mem.text == sample_memory_create.text
         assert mem.durability == sample_memory_create.durability
         assert mem.confidence == sample_memory_create.confidence
@@ -118,7 +118,7 @@ class TestMemoryCreate:
     def test_memory_create_defaults(self):
         """Test default values for MemoryCreate."""
         mc = MemoryCreate(text="Simple fact")
-        
+
         assert mc.durability == Durability.EPISODIC
         assert mc.confidence == 0.8
         assert mc.source == MemorySource.INFERRED
@@ -130,7 +130,7 @@ class TestMemoryUpdate:
     def test_memory_update_defaults(self):
         """Test default values for MemoryUpdate."""
         update = MemoryUpdate(text="Updated text")
-        
+
         assert update.text == "Updated text"
         assert update.confidence == 0.9
         assert update.source == MemorySource.EXPLICIT
@@ -142,7 +142,7 @@ class TestMemoryQuery:
     def test_memory_query_defaults(self):
         """Test default values for MemoryQuery."""
         query = MemoryQuery(query="test search")
-        
+
         assert query.query == "test search"
         assert query.limit == 10
         assert query.min_confidence == 0.0
@@ -157,7 +157,7 @@ class TestMemoryQuery:
             durability=[Durability.CORE],
             min_confidence=0.8,
         )
-        
+
         assert query.limit == 5
         assert query.durability == [Durability.CORE]
         assert query.min_confidence == 0.8
@@ -166,7 +166,7 @@ class TestMemoryQuery:
         """Test that limit is bounded."""
         with pytest.raises(ValueError):
             MemoryQuery(query="test", limit=0)
-        
+
         with pytest.raises(ValueError):
             MemoryQuery(query="test", limit=101)
 

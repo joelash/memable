@@ -10,7 +10,6 @@ from langgraph.store.postgres import PostgresStore
 
 from engram_ai.backends.base import BaseStore, StoreItem
 
-
 DEFAULT_EMBED_MODEL = "text-embedding-3-small"
 DEFAULT_EMBED_DIMS = 1536
 
@@ -18,10 +17,10 @@ DEFAULT_EMBED_DIMS = 1536
 class PostgresBackend(BaseStore):
     """
     PostgreSQL backend with pgvector for semantic search.
-    
+
     Uses LangGraph's PostgresStore under the hood.
     """
-    
+
     def __init__(
         self,
         conn_str: str,
@@ -31,7 +30,7 @@ class PostgresBackend(BaseStore):
     ):
         """
         Initialize PostgreSQL backend.
-        
+
         Args:
             conn_str: PostgreSQL connection string.
             embed_model: OpenAI embedding model name.
@@ -44,7 +43,7 @@ class PostgresBackend(BaseStore):
         self._embed_fields = embed_fields or ["text"]
         self._store: PostgresStore | None = None
         self._context = None
-    
+
     def _ensure_connected(self) -> PostgresStore:
         """Ensure we have an active connection."""
         if self._store is None:
@@ -58,12 +57,12 @@ class PostgresBackend(BaseStore):
             )
             self._store = self._context.__enter__()
         return self._store
-    
+
     def setup(self) -> None:
         """Create tables and indexes."""
         store = self._ensure_connected()
         store.setup()
-    
+
     def put(
         self,
         namespace: tuple[str, ...],
@@ -73,7 +72,7 @@ class PostgresBackend(BaseStore):
         """Store a value."""
         store = self._ensure_connected()
         store.put(namespace=namespace, key=key, value=value)
-    
+
     def get(
         self,
         namespace: tuple[str, ...],
@@ -89,7 +88,7 @@ class PostgresBackend(BaseStore):
             value=result.value,
             namespace=namespace,
         )
-    
+
     def delete(
         self,
         namespace: tuple[str, ...],
@@ -98,7 +97,7 @@ class PostgresBackend(BaseStore):
         """Delete a value."""
         store = self._ensure_connected()
         store.delete(namespace=namespace, key=key)
-    
+
     def search(
         self,
         namespace: tuple[str, ...],
@@ -117,7 +116,7 @@ class PostgresBackend(BaseStore):
             )
             for r in results
         ]
-    
+
     def close(self) -> None:
         """Close the connection."""
         if self._context is not None:
@@ -134,20 +133,20 @@ def build_postgres_backend(
 ) -> PostgresBackend:
     """
     Create a PostgreSQL backend.
-    
+
     Args:
         conn_str: Connection string. Falls back to DATABASE_URL env var.
         embed_model: OpenAI embedding model.
         dims: Embedding dimensions.
         embed_fields: Fields to embed.
-        
+
     Returns:
         PostgresBackend instance.
     """
     conn_str = conn_str or os.environ.get("DATABASE_URL")
     if not conn_str:
         raise ValueError("Connection string required. Pass conn_str or set DATABASE_URL.")
-    
+
     return PostgresBackend(
         conn_str=conn_str,
         embed_model=embed_model,

@@ -26,9 +26,9 @@ class TestMemoryExtraction:
     def test_extract_core_fact(self, skip_without_openai, sample_messages):
         """Test extracting core biographical facts."""
         extracted = extract_memories(sample_messages[:2])
-        
+
         assert len(extracted) > 0
-        
+
         # Should extract name and location as core facts
         texts = [m.text.lower() for m in extracted]
         assert any("joel" in t for t in texts)
@@ -36,10 +36,10 @@ class TestMemoryExtraction:
     def test_extract_situational_fact(self, skip_without_openai, sample_messages):
         """Test extracting situational facts with expiry."""
         extracted = extract_memories(sample_messages)
-        
+
         # Should find the trip mention
         situational = [m for m in extracted if m.durability == Durability.SITUATIONAL]
-        
+
         # If it classified the trip as situational, it should have an expiry
         if situational:
             assert any(m.valid_until is not None for m in situational)
@@ -50,9 +50,9 @@ class TestMemoryExtraction:
             {"role": "user", "content": "Hello!"},
             {"role": "assistant", "content": "Hi there! How can I help?"},
         ]
-        
+
         extracted = extract_memories(messages)
-        
+
         # Should extract nothing or very little from a simple greeting
         assert len(extracted) == 0
 
@@ -61,13 +61,13 @@ class TestMemoryExtraction:
         messages = [
             {"role": "user", "content": "I switched to vim last month."},
         ]
-        
+
         extractor = MemoryExtractor()
         extracted = extractor.extract(
             messages,
             context="User is a software developer who previously used VS Code",
         )
-        
+
         # Should extract the editor preference
         assert len(extracted) > 0
         texts = [m.text.lower() for m in extracted]
@@ -83,5 +83,5 @@ class TestAsyncExtraction:
         """Test async extraction."""
         extractor = MemoryExtractor()
         extracted = await extractor.aextract(sample_messages)
-        
+
         assert len(extracted) > 0

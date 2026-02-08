@@ -3,8 +3,7 @@ Pytest fixtures for ai-semantic-memory tests.
 """
 
 import os
-from datetime import datetime, timezone
-from typing import Generator
+from datetime import datetime
 from uuid import uuid4
 
 import pytest
@@ -13,8 +12,7 @@ from dotenv import load_dotenv
 # Load .env file for API keys
 load_dotenv()
 
-from engram_ai.schema import Durability, Memory, MemoryCreate, MemorySource
-
+from engram_ai.schema import Durability, Memory, MemoryCreate, MemorySource  # noqa: E402
 
 # ============================================================================
 # Unit test fixtures (no external dependencies)
@@ -97,10 +95,10 @@ def memories_for_search() -> list[Memory]:
 def postgres_container():
     """
     Start a PostgreSQL container for integration tests.
-    
+
     If DATABASE_URL is set, skip container and use that directly.
     Otherwise, requires testcontainers[postgres] and Docker with pgvector image.
-    
+
     Pull the image first:
         docker pull pgvector/pgvector:pg16
     """
@@ -108,11 +106,11 @@ def postgres_container():
     if os.environ.get("DATABASE_URL"):
         yield None
         return
-    
+
     pytest.importorskip("testcontainers")
-    
+
     from testcontainers.postgres import PostgresContainer
-    
+
     try:
         with PostgresContainer("pgvector/pgvector:pg16", driver="psycopg") as postgres:
             yield postgres
@@ -127,7 +125,7 @@ def postgres_url(postgres_container) -> str:
     env_url = os.environ.get("DATABASE_URL")
     if env_url:
         return env_url
-    
+
     url = postgres_container.get_connection_url()
     # Testcontainers returns SQLAlchemy-style URL (postgresql+psycopg://...)
     # but psycopg wants standard postgres URL (postgresql://...)
@@ -142,9 +140,9 @@ def semantic_store(postgres_url: str):
     # Skip if no OpenAI key (can't create embeddings)
     if not os.environ.get("OPENAI_API_KEY"):
         pytest.skip("OPENAI_API_KEY not set")
-    
+
     from engram_ai.store import build_postgres_store
-    
+
     with build_postgres_store(postgres_url) as store:
         store.setup()
         yield store

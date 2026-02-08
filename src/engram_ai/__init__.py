@@ -15,11 +15,11 @@ from engram_ai.schema import (
     MemoryUpdate,
 )
 from engram_ai.store import (
+    SemanticMemoryStore,
     build_duckdb_store,
     build_postgres_store,
     build_sqlite_store,
     build_store,
-    SemanticMemoryStore,
 )
 
 __version__ = "0.2.0"

@@ -14,13 +14,14 @@ Run:
 """
 
 import os
+
 from dotenv import load_dotenv
 
 # Load .env file if present
 load_dotenv()
 
-from engram_ai import build_postgres_store
-from engram_ai.graph import build_memory_graph
+from engram_ai import build_postgres_store  # noqa: E402
+from engram_ai.graph import build_memory_graph  # noqa: E402
 
 
 def main():
@@ -57,10 +58,10 @@ def main():
 
         while True:
             user_input = input("You: ").strip()
-            
+
             if not user_input:
                 continue
-            
+
             if user_input.lower() in {"quit", "exit", "q"}:
                 print("Goodbye!")
                 break
@@ -137,7 +138,7 @@ def demo_memories():
 
 if __name__ == "__main__":
     import sys
-    
+
     if len(sys.argv) > 1 and sys.argv[1] == "demo":
         demo_memories()
     else:

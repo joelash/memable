@@ -10,15 +10,15 @@ from contextlib import asynccontextmanager
 from functools import wraps
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_openai import ChatOpenAI
 from psycopg import OperationalError
 from pydantic import BaseModel
 
-from engram_ai import MemoryCreate, build_postgres_store
+from engram_ai import build_postgres_store
 from engram_ai.extraction import MemoryExtractor
-from engram_ai.schema import Durability, Memory
+from engram_ai.schema import Memory
 
 load_dotenv()
 
@@ -31,7 +31,7 @@ _store_lock = threading.Lock()
 def get_store():
     """Get or create the store, reconnecting if needed."""
     global _store, _store_context
-    
+
     with _store_lock:
         if _store is None:
             _reconnect()
@@ -41,18 +41,18 @@ def get_store():
 def _reconnect():
     """Create a fresh database connection."""
     global _store, _store_context
-    
+
     # Clean up old connection if any
     if _store_context is not None:
         try:
             _store_context.__exit__(None, None, None)
         except Exception:
             pass
-    
+
     db_url = os.environ.get("DATABASE_URL")
     if not db_url:
         raise RuntimeError("DATABASE_URL not set")
-    
+
     _store_context = build_postgres_store(db_url)
     _store = _store_context.__enter__()
     _store.setup()
@@ -77,11 +77,11 @@ def with_reconnect(f):
 async def lifespan(app: FastAPI):
     """Initialize database on startup, cleanup on shutdown."""
     global _store, _store_context
-    
+
     _reconnect()
-    
+
     yield
-    
+
     if _store_context is not None:
         try:
             _store_context.__exit__(None, None, None)
@@ -94,7 +94,13 @@ app = FastAPI(title="engram-ai Demo", lifespan=lifespan)
 # CORS for local dev
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:3000", "http://127.0.0.1:5173", "http://127.0.0.1:5174"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -138,45 +144,45 @@ def root():
 def chat(req: ChatRequest):
     """Send a message and get a response with memory context."""
     store = get_store()
-    
+
     # 1. Retrieve relevant memories
     memories = store.search(NAMESPACE, req.message)
     memories_used = [_memory_to_dict(m) for m in memories[:5]]
-    
+
     # 2. Build context
     memory_context = ""
     if memories:
         memory_lines = [f"- {m.text}" for m in memories[:5]]
         memory_context = "What you know about the user:\n" + "\n".join(memory_lines)
-    
+
     # 3. Chat with LLM
     system = f"""You are a helpful assistant with long-term memory.
 Use your memories about the user when relevant. Be conversational and friendly.
 
 {memory_context}"""
-    
+
     messages = [
         {"role": "system", "content": system},
         {"role": "user", "content": req.message},
     ]
-    
+
     response = llm.invoke(messages)
     assistant_msg = response.content
-    
+
     # 4. Extract and store new memories
     convo = [
         {"role": "user", "content": req.message},
         {"role": "assistant", "content": assistant_msg},
     ]
-    
+
     extracted = extractor.extract(convo)
     memories_created = []
-    
+
     for mem_create in extracted:
         # Check for contradictions (simple version - just add for now)
         stored = store.add(NAMESPACE, mem_create)
         memories_created.append(_memory_to_dict(stored))
-    
+
     return ChatResponse(
         response=assistant_msg,
         memories_used=memories_used,

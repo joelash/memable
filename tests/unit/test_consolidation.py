@@ -2,7 +2,6 @@
 Unit tests for consolidation module.
 """
 
-import pytest
 
 from engram_ai.consolidation import ConsolidationResult, ConsolidationStrategy
 
@@ -29,7 +28,7 @@ class TestConsolidationResult:
     def test_result_defaults(self):
         """Test default values for ConsolidationResult."""
         result = ConsolidationResult(strategy=ConsolidationStrategy.PRUNE_EXPIRED)
-        
+
         assert result.strategy == ConsolidationStrategy.PRUNE_EXPIRED
         assert result.memories_processed == 0
         assert result.memories_removed == 0
@@ -47,7 +46,7 @@ class TestConsolidationResult:
             summaries_created=2,
             details=["Summarized 8 memories into 2"],
         )
-        
+
         assert result.memories_processed == 10
         assert result.memories_removed == 8
         assert result.memories_created == 2

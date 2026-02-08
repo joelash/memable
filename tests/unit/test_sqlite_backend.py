@@ -1,11 +1,10 @@
 """Unit tests for SQLite backend."""
 
-import tempfile
 from pathlib import Path
 
 import pytest
 
-from engram_ai import build_sqlite_store, build_store, MemoryCreate, Durability
+from engram_ai import Durability, MemoryCreate, build_sqlite_store, build_store
 
 
 class TestSQLiteBackend:
@@ -69,10 +68,10 @@ class TestSQLiteOperations:
             durability=Durability.CORE,
             confidence=0.9,
         )
-        
+
         stored = store.add(namespace, memory)
         assert stored.text == "Test memory content"
-        
+
         retrieved = store.get(namespace, stored.id)
         assert retrieved is not None
         assert retrieved.text == "Test memory content"
@@ -90,10 +89,10 @@ class TestSQLiteOperations:
 
         memory = MemoryCreate(text="To be deleted", durability=Durability.EPISODIC)
         stored = store.add(namespace, memory)
-        
+
         result = store.delete(namespace, stored.id)
         assert result is True
-        
+
         retrieved = store.get(namespace, stored.id)
         assert retrieved is None
 
@@ -113,6 +112,6 @@ class TestSQLiteOperations:
                 text=f"Memory {i}",
                 durability=Durability.SITUATIONAL,
             ))
-        
+
         memories = store.list_all(namespace)
         assert len(memories) == 3

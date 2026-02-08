@@ -24,7 +24,7 @@ from engram_ai.schema import (
 )
 
 if TYPE_CHECKING:
-    from langgraph.store.postgres import PostgresStore
+    pass
 
 
 @contextmanager

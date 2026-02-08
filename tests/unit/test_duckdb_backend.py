@@ -5,8 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from engram_ai import build_duckdb_store, build_store, MemoryCreate, Durability
-
+from engram_ai import Durability, MemoryCreate, build_duckdb_store, build_store
 
 # Skip all tests if duckdb not installed
 duckdb = pytest.importorskip("duckdb")
@@ -69,10 +68,10 @@ class TestDuckDBOperations:
             durability=Durability.CORE,
             confidence=0.9,
         )
-        
+
         stored = store.add(namespace, memory)
         assert stored.text == "Test memory content for DuckDB"
-        
+
         retrieved = store.get(namespace, stored.id)
         assert retrieved is not None
         assert retrieved.text == "Test memory content for DuckDB"
@@ -85,10 +84,10 @@ class TestDuckDBOperations:
 
         memory = MemoryCreate(text="To be deleted from DuckDB", durability=Durability.EPISODIC)
         stored = store.add(namespace, memory)
-        
+
         result = store.delete(namespace, stored.id)
         assert result is True
-        
+
         retrieved = store.get(namespace, stored.id)
         assert retrieved is None
 
@@ -103,7 +102,7 @@ class TestDuckDBOperations:
                 text=f"DuckDB Memory {i}",
                 durability=Durability.SITUATIONAL,
             ))
-        
+
         memories = store.list_all(namespace)
         assert len(memories) == 3
 
@@ -125,7 +124,7 @@ class TestDuckDBOperations:
             text="The user prefers dark mode in IDEs",
             durability=Durability.SITUATIONAL,
         ))
-        
+
         # Search for programming-related
         results = store.search(namespace, "coding software development")
         assert len(results) > 0
