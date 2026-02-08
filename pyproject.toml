@@ -36,6 +36,9 @@ dependencies = [
 sqlite = [
     "sqlite-vec>=0.1.0",  # Vector search extension for SQLite
 ]
+duckdb = [
+    "duckdb>=1.0.0",  # DuckDB with native vector similarity
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.24.0",
@@ -43,9 +46,10 @@ dev = [
     "ruff>=0.4.0",
     "mypy>=1.10.0",
     "testcontainers[postgres]>=4.0.0",  # for integration tests
+    "duckdb>=1.0.0",  # for DuckDB tests
 ]
 all = [
-    "engram-ai[sqlite,dev]",
+    "engram-ai[sqlite,duckdb,dev]",
 ]
 
 [project.urls]

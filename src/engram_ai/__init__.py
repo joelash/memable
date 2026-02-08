@@ -15,6 +15,7 @@ from engram_ai.schema import (
     MemoryUpdate,
 )
 from engram_ai.store import (
+    build_duckdb_store,
     build_postgres_store,
     build_sqlite_store,
     build_store,
@@ -28,6 +29,7 @@ __all__ = [
     "build_store",           # Auto-detect backend from URL
     "build_postgres_store",  # PostgreSQL backend
     "build_sqlite_store",    # SQLite backend
+    "build_duckdb_store",    # DuckDB / MotherDuck backend
     # Store class
     "SemanticMemoryStore",
     # Schema

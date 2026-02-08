@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 from engram_ai.backends.base import BaseStore
 from engram_ai.backends.postgres import PostgresBackend, DEFAULT_EMBED_MODEL, DEFAULT_EMBED_DIMS
 from engram_ai.backends.sqlite import SQLiteBackend
+from engram_ai.backends.duckdb import DuckDBBackend
 
 
 def build_store(
@@ -24,6 +25,8 @@ def build_store(
     Supported URL schemes:
     - postgresql://, postgres:// → PostgreSQL with pgvector
     - sqlite://, sqlite:/// → SQLite with sqlite-vec
+    - duckdb:// → DuckDB (local file)
+    - md:, motherduck: → MotherDuck (cloud DuckDB)
     - file:// → SQLite (local file path)
     - :memory: → SQLite in-memory (for testing)
     
@@ -39,15 +42,22 @@ def build_store(
         Configured BaseStore instance.
         
     Examples:
-        # PostgreSQL
+        # PostgreSQL (production)
         store = build_store("postgresql://user:pass@host:5432/db")
         
-        # SQLite file
+        # SQLite file (development)
         store = build_store("sqlite:///path/to/engram.db")
         store = build_store("sqlite:///./local.db")  # relative path
         
         # SQLite in-memory (testing)
         store = build_store(":memory:")
+        
+        # DuckDB local
+        store = build_store("duckdb:///./analytics.duckdb")
+        
+        # MotherDuck cloud
+        store = build_store("md:my_database")
+        store = build_store("motherduck:my_database")
         
         # From environment
         store = build_store()  # Uses DATABASE_URL or MEMORY_DATABASE_URL
@@ -111,17 +121,53 @@ def build_store(
             embed_fields=embed_fields,
         )
     
-    elif scheme == "":
-        # Assume it's a file path (e.g., "./engram.db" or "/path/to/db")
-        return SQLiteBackend(
+    elif scheme == "duckdb":
+        # duckdb:///path/to/file.duckdb
+        db_path = parsed.path
+        if db_path.startswith("/"):
+            if db_path.startswith("//"):
+                db_path = db_path[1:]
+            elif not db_path.startswith("/."):
+                db_path = db_path[1:]
+        
+        return DuckDBBackend(
+            db_path=db_path or "engram.duckdb",
+            embed_model=embed_model,
+            dims=dims,
+            embed_fields=embed_fields,
+        )
+    
+    elif scheme in ("md", "motherduck"):
+        # md:database_name or motherduck:database_name
+        # Pass the full URL to DuckDB which handles MotherDuck natively
+        return DuckDBBackend(
             db_path=url,
             embed_model=embed_model,
             dims=dims,
             embed_fields=embed_fields,
         )
     
+    elif scheme == "":
+        # Assume it's a file path
+        # Check extension to determine backend
+        if url.endswith(".duckdb") or url.endswith(".ddb"):
+            return DuckDBBackend(
+                db_path=url,
+                embed_model=embed_model,
+                dims=dims,
+                embed_fields=embed_fields,
+            )
+        else:
+            # Default to SQLite
+            return SQLiteBackend(
+                db_path=url,
+                embed_model=embed_model,
+                dims=dims,
+                embed_fields=embed_fields,
+            )
+    
     else:
         raise ValueError(
             f"Unsupported URL scheme: {scheme}. "
-            f"Supported: postgresql, postgres, sqlite, file, or bare file path."
+            f"Supported: postgresql, postgres, sqlite, duckdb, md, motherduck, file, or bare file path."
         )

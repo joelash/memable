@@ -4,7 +4,8 @@ Backend storage implementations for engram-ai.
 Supported backends:
 - PostgreSQL (via LangGraph PostgresStore + pgvector)
 - SQLite (via sqlite-vec for vector search)
-- DuckDB (planned)
+- DuckDB (native vector similarity)
+- MotherDuck (cloud DuckDB)
 """
 
 from engram_ai.backends.base import BaseStore, StoreItem

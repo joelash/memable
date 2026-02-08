@@ -165,6 +165,64 @@ def build_sqlite_store(
         yield store
 
 
+@contextmanager
+def build_duckdb_store(
+    db_path: str | None = None,
+    embed_model: str = DEFAULT_EMBED_MODEL,
+    dims: int = DEFAULT_EMBED_DIMS,
+    embed_fields: list[str] | None = None,
+) -> Iterator["SemanticMemoryStore"]:
+    """
+    Create a SemanticMemoryStore backed by DuckDB.
+
+    Great for analytics-heavy workloads and columnar data.
+
+    Args:
+        db_path: Path to DuckDB database, ":memory:", or MotherDuck URL.
+                 Falls back to DUCKDB_PATH env var or "engram.duckdb".
+        embed_model: OpenAI embedding model name.
+        dims: Embedding dimensions.
+        embed_fields: Fields to embed. Default: ["text"].
+
+    Yields:
+        SemanticMemoryStore instance.
+
+    Examples:
+        # Local file
+        with build_duckdb_store("./data.duckdb") as store:
+            store.setup()
+            store.add(namespace, memory)
+
+        # In-memory (testing)
+        with build_duckdb_store(":memory:") as store:
+            store.setup()
+            store.add(namespace, memory)
+
+        # MotherDuck cloud
+        with build_duckdb_store("md:my_database") as store:
+            store.setup()
+            store.add(namespace, memory)
+    """
+    if db_path is None:
+        db_path = os.environ.get("DUCKDB_PATH", "engram.duckdb")
+
+    # Handle special cases
+    if db_path == ":memory:":
+        url = db_path  # DuckDB handles :memory: natively
+    elif db_path.startswith(("md:", "motherduck:")):
+        url = db_path  # MotherDuck URL
+    else:
+        url = f"duckdb:///{db_path}"
+
+    with build_store(
+        url=url,
+        embed_model=embed_model,
+        dims=dims,
+        embed_fields=embed_fields,
+    ) as store:
+        yield store
+
+
 class SemanticMemoryStore:
     """
     High-level memory store with durability tiers, version chains, and temporal awareness.
