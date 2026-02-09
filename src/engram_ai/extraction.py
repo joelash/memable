@@ -4,13 +4,15 @@ Memory extraction from conversations using LLM.
 
 import json
 from datetime import UTC, datetime, timedelta
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
-from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
 from engram_ai.schema import Durability, MemoryCreate, MemorySource
+
+if TYPE_CHECKING:
+    from langchain_core.language_models import BaseChatModel
 
 # Default extraction model
 DEFAULT_MODEL = "gpt-4.1-mini"
@@ -103,16 +105,37 @@ class MemoryExtractor:
     def __init__(
         self,
         model: str = DEFAULT_MODEL,
-        llm: ChatOpenAI | None = None,
+        llm: "BaseChatModel | None" = None,
     ):
         """
         Initialize the extractor.
 
         Args:
-            model: OpenAI model name (if llm not provided).
-            llm: Optional pre-configured ChatOpenAI instance.
+            model: OpenAI model name (only used if llm not provided).
+            llm: LangChain chat model. If None, uses ChatOpenAI.
+
+        Examples:
+            # Default (OpenAI)
+            extractor = MemoryExtractor()
+
+            # AWS Bedrock
+            from langchain_aws import ChatBedrock
+            extractor = MemoryExtractor(llm=ChatBedrock(model_id="anthropic.claude-3-5-sonnet..."))
+
+            # Anthropic direct
+            from langchain_anthropic import ChatAnthropic
+            extractor = MemoryExtractor(llm=ChatAnthropic(model="claude-3-5-sonnet-20241022"))
+
+            # Via AI Gateway
+            from langchain_openai import ChatOpenAI
+            llm = ChatOpenAI(model="gpt-4.1-mini", base_url="https://gateway.ai.cloudflare.com/v1/...")
+            extractor = MemoryExtractor(llm=llm)
         """
-        self.llm = llm or ChatOpenAI(model=model, temperature=0)
+        if llm is not None:
+            self.llm = llm
+        else:
+            from langchain_openai import ChatOpenAI
+            self.llm = ChatOpenAI(model=model, temperature=0)
 
     def extract(
         self,
@@ -242,6 +265,7 @@ class MemoryExtractor:
 def extract_memories(
     messages: list[dict[str, Any]] | list[BaseMessage],
     model: str = DEFAULT_MODEL,
+    llm: "BaseChatModel | None" = None,
     context: str | None = None,
 ) -> list[MemoryCreate]:
     """
@@ -249,11 +273,21 @@ def extract_memories(
 
     Args:
         messages: Conversation messages.
-        model: OpenAI model to use.
+        model: OpenAI model to use (only if llm not provided).
+        llm: LangChain chat model. If None, uses ChatOpenAI.
         context: Optional additional context.
 
     Returns:
         List of MemoryCreate objects.
+
+    Examples:
+        # Default (OpenAI)
+        memories = extract_memories(messages)
+
+        # With custom LLM (AWS Bedrock)
+        from langchain_aws import ChatBedrock
+        llm = ChatBedrock(model_id="anthropic.claude-3-5-sonnet...")
+        memories = extract_memories(messages, llm=llm)
     """
-    extractor = MemoryExtractor(model=model)
+    extractor = MemoryExtractor(model=model, llm=llm)
     return extractor.extract(messages, context=context)

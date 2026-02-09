@@ -3,13 +3,16 @@ Contradiction detection and resolution via version chains.
 """
 
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
 from engram_ai.schema import Memory, MemorySource, MemoryUpdate
 from engram_ai.store import SemanticMemoryStore
+
+if TYPE_CHECKING:
+    from langchain_core.language_models import BaseChatModel
 
 DEFAULT_MODEL = "gpt-4.1-mini"
 
@@ -74,9 +77,29 @@ class ContradictionDetector:
     def __init__(
         self,
         model: str = DEFAULT_MODEL,
-        llm: ChatOpenAI | None = None,
+        llm: "BaseChatModel | None" = None,
     ):
-        self.llm = llm or ChatOpenAI(model=model, temperature=0)
+        """
+        Initialize the detector.
+
+        Args:
+            model: OpenAI model name (only used if llm not provided).
+            llm: LangChain chat model. If None, uses ChatOpenAI.
+
+        Examples:
+            # Default (OpenAI)
+            detector = ContradictionDetector()
+
+            # AWS Bedrock
+            from langchain_aws import ChatBedrock
+            llm = ChatBedrock(model_id="anthropic.claude-3-5-sonnet...")
+            detector = ContradictionDetector(llm=llm)
+        """
+        if llm is not None:
+            self.llm = llm
+        else:
+            from langchain_openai import ChatOpenAI
+            self.llm = ChatOpenAI(model=model, temperature=0)
 
     def check(
         self,
