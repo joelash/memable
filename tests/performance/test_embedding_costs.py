@@ -7,7 +7,7 @@ Run with: pytest tests/performance/test_embedding_costs.py -v -s
 """
 
 import os
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, call
 from uuid import uuid4
 
 import pytest
@@ -23,95 +23,87 @@ class TestEmbeddingCosts:
     PRICE_PER_MILLION_TOKENS = 0.02
 
     @pytest.fixture
-    def store(self):
-        """In-memory SQLite store."""
-        # Skip if no API key
-        if not os.environ.get("OPENAI_API_KEY"):
-            pytest.skip("OPENAI_API_KEY required")
-
-        with build_sqlite_store(":memory:") as s:
-            s.setup()
-            yield s
-
-    @pytest.fixture
     def namespace(self):
         return (f"cost_test_{uuid4().hex[:8]}", "memories")
 
-    def test_embedding_calls_per_add(self, store, namespace):
+    def test_embedding_calls_per_add(self, namespace):
         """Count embedding API calls for add operation."""
-        # Track calls to the embedding function
-        call_count = 0
-        original_embed = store._store._get_embeddings().embed_query
+        if not os.environ.get("OPENAI_API_KEY"):
+            pytest.skip("OPENAI_API_KEY required")
 
-        def counting_embed(text):
-            nonlocal call_count
-            call_count += 1
-            return original_embed(text)
+        with build_sqlite_store(":memory:") as store:
+            store.setup()
 
-        store._store._get_embeddings().embed_query = counting_embed
+            # Patch at the class level to count calls
+            with patch.object(
+                store._store._get_embeddings().__class__,
+                'embed_query',
+                wraps=store._store._get_embeddings().embed_query
+            ) as mock_embed:
+                store.add(namespace, MemoryCreate(
+                    text="User prefers dark mode in all applications",
+                    durability=Durability.CORE,
+                ))
 
-        # Add a memory
-        store.add(namespace, MemoryCreate(
-            text="User prefers dark mode in all applications",
-            durability=Durability.CORE,
-        ))
+                call_count = mock_embed.call_count
+                print(f"\n📊 Embedding Calls per ADD: {call_count}")
+                assert call_count == 1, f"Expected 1 embedding call, got {call_count}"
 
-        print(f"\n📊 Embedding Calls per ADD: {call_count}")
-        assert call_count == 1, f"Expected 1 embedding call, got {call_count}"
-
-    def test_embedding_calls_per_search(self, store, namespace):
+    def test_embedding_calls_per_search(self, namespace):
         """Count embedding API calls for search operation."""
-        # Seed some data
-        for i in range(5):
-            store.add(namespace, MemoryCreate(
-                text=f"Memory {i} about preferences",
+        if not os.environ.get("OPENAI_API_KEY"):
+            pytest.skip("OPENAI_API_KEY required")
+
+        with build_sqlite_store(":memory:") as store:
+            store.setup()
+
+            # Seed some data first (these will call embed)
+            for i in range(5):
+                store.add(namespace, MemoryCreate(
+                    text=f"Memory {i} about preferences",
+                    durability=Durability.CORE,
+                ))
+
+            # Now patch and count only search calls
+            with patch.object(
+                store._store._get_embeddings().__class__,
+                'embed_query',
+                wraps=store._store._get_embeddings().embed_query
+            ) as mock_embed:
+                store.search(namespace, "user preferences")
+
+                call_count = mock_embed.call_count
+                print(f"\n📊 Embedding Calls per SEARCH: {call_count}")
+                assert call_count == 1, f"Expected 1 embedding call, got {call_count}"
+
+    def test_no_embedding_for_get(self, namespace):
+        """Verify get() doesn't call embedding API."""
+        if not os.environ.get("OPENAI_API_KEY"):
+            pytest.skip("OPENAI_API_KEY required")
+
+        with build_sqlite_store(":memory:") as store:
+            store.setup()
+
+            # Create a memory first
+            mem = store.add(namespace, MemoryCreate(
+                text="Test memory",
                 durability=Durability.CORE,
             ))
 
-        # Track calls
-        call_count = 0
-        original_embed = store._store._get_embeddings().embed_query
+            # Now patch and verify get doesn't call embed
+            with patch.object(
+                store._store._get_embeddings().__class__,
+                'embed_query',
+                wraps=store._store._get_embeddings().embed_query
+            ) as mock_embed:
+                store.get(namespace, mem.id)
 
-        def counting_embed(text):
-            nonlocal call_count
-            call_count += 1
-            return original_embed(text)
+                call_count = mock_embed.call_count
+                print(f"\n📊 Embedding Calls per GET: {call_count}")
+                assert call_count == 0, f"GET should not call embedding API, got {call_count} calls"
 
-        store._store._get_embeddings().embed_query = counting_embed
-
-        # Search
-        store.search(namespace, "user preferences")
-
-        print(f"\n📊 Embedding Calls per SEARCH: {call_count}")
-        assert call_count == 1, f"Expected 1 embedding call, got {call_count}"
-
-    def test_no_embedding_for_get(self, store, namespace):
-        """Verify get() doesn't call embedding API."""
-        # Create a memory
-        mem = store.add(namespace, MemoryCreate(
-            text="Test memory",
-            durability=Durability.CORE,
-        ))
-
-        # Track calls
-        call_count = 0
-        original_embed = store._store._get_embeddings().embed_query
-
-        def counting_embed(text):
-            nonlocal call_count
-            call_count += 1
-            return original_embed(text)
-
-        store._store._get_embeddings().embed_query = counting_embed
-
-        # Get by ID
-        store.get(namespace, mem.id)
-
-        print(f"\n📊 Embedding Calls per GET: {call_count}")
-        assert call_count == 0, f"GET should not call embedding API, got {call_count} calls"
-
-    def test_cost_estimation(self, store, namespace):
-        """Estimate costs for typical usage patterns."""
+    def test_cost_estimation(self):
+        """Estimate costs for typical usage patterns (no API needed)."""
         # Typical token counts (rough estimates)
         avg_memory_tokens = 20  # "User prefers dark mode" ≈ 5 tokens, with overhead
         avg_query_tokens = 10
