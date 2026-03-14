@@ -48,20 +48,20 @@ const typescriptCode = `<span class="token-keyword">import</span> { MemoryStore,
 <span class="token-comment">// Recall it later</span>
 <span class="token-keyword">const</span> memories = <span class="token-keyword">await</span> store.<span class="token-function">search</span>(namespace, <span class="token-string">"user preferences"</span>);`;
 
-const mcpCode = `<span class="token-comment">// MCP Server for Claude Desktop, Cursor, etc.</span>
+const mcpCode = `<span class="token-comment">// Zero-config: memories stored locally in ~/.engram/</span>
 {
   <span class="token-string">"mcpServers"</span>: {
     <span class="token-string">"engram"</span>: {
       <span class="token-string">"command"</span>: <span class="token-string">"npx"</span>,
       <span class="token-string">"args"</span>: [<span class="token-string">"engram-ai-mcp"</span>],
       <span class="token-string">"env"</span>: {
-        <span class="token-string">"DATABASE_URL"</span>: <span class="token-string">"postgresql://..."</span>,
         <span class="token-string">"OPENAI_API_KEY"</span>: <span class="token-string">"sk-..."</span>
       }
     }
   }
 }
 
+<span class="token-comment">// Add DATABASE_URL for Postgres/cloud sync</span>
 <span class="token-comment">// Tools: remember, recall, list_memories, forget</span>`;
 
 // Animation variants
