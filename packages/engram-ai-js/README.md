@@ -1,16 +1,16 @@
-# engram-ai (TypeScript)
+# memento-ai (TypeScript)
 
-Long-term semantic memory for AI agents. TypeScript implementation compatible with Python [engram-ai](https://github.com/joelash/engram-ai).
+Long-term semantic memory for AI agents. TypeScript implementation compatible with Python [memento-ai](https://github.com/joelash/memento-ai).
 
 ## Features
 
-- **Zero-config MCP** — just `npx engram-ai-mcp` with Claude Desktop/Cursor
+- **Zero-config MCP** — just `npx memento-ai-mcp` with Claude Desktop/Cursor
 - **SQLite local storage** — no database setup required
 - **Postgres support** — scale up when you need it
 - **Semantic search** — find memories by meaning, not keywords
 - **Durability tiers** — core facts vs situational context vs episodic memories
 - **Version chains** — audit trail for memory updates
-- **Cross-language** — shares schema with Python engram-ai
+- **Cross-language** — shares schema with Python memento-ai
 
 ## Quick Start: MCP Server
 
@@ -19,9 +19,9 @@ Add memory to Claude Desktop, Cursor, or any MCP tool — **zero config**:
 ```json
 {
   "mcpServers": {
-    "engram": {
+    .memento": {
       "command": "npx",
-      "args": ["engram-ai-mcp"],
+      "args": ["memento-ai-mcp"],
       "env": {
         "OPENAI_API_KEY": "sk-..."
       }
@@ -30,7 +30,7 @@ Add memory to Claude Desktop, Cursor, or any MCP tool — **zero config**:
 }
 ```
 
-That's it! Memories are stored locally in `~/.engram/memories.db`.
+That's it! Memories are stored locally in `~/.memento/memories.db`.
 
 ### MCP with Postgres (optional)
 
@@ -39,9 +39,9 @@ For cloud sync or multi-device, add `DATABASE_URL`:
 ```json
 {
   "mcpServers": {
-    "engram": {
+    .memento": {
       "command": "npx",
-      "args": ["engram-ai-mcp"],
+      "args": ["memento-ai-mcp"],
       "env": {
         "DATABASE_URL": "postgresql://...",
         "OPENAI_API_KEY": "sk-..."
@@ -63,9 +63,9 @@ For cloud sync or multi-device, add `DATABASE_URL`:
 ## Installation
 
 ```bash
-npm install engram-ai
+npm install memento-ai
 # or
-pnpm add engram-ai
+pnpm add memento-ai
 ```
 
 ## Programmatic Usage
@@ -73,11 +73,11 @@ pnpm add engram-ai
 ### SQLite (Zero Config)
 
 ```typescript
-import { SQLiteMemoryStore, openaiEmbeddings, Durability, MemoryType } from 'engram-ai';
+import { SQLiteMemoryStore, openaiEmbeddings, Durability, MemoryType } from 'memento-ai';
 
 const store = new SQLiteMemoryStore({
   embeddings: openaiEmbeddings({ apiKey: process.env.OPENAI_API_KEY }),
-  // dbPath: '~/.engram/memories.db'  // optional, this is the default
+  // dbPath: '~/.memento/memories.db'  // optional, this is the default
 });
 
 await store.setup();
@@ -103,7 +103,7 @@ store.close();
 
 ```typescript
 import { neon } from '@neondatabase/serverless';
-import { MemoryStore, openaiEmbeddings, Durability, MemoryType } from 'engram-ai';
+import { MemoryStore, openaiEmbeddings, Durability, MemoryType } from 'memento-ai';
 
 const sql = neon(process.env.DATABASE_URL!);
 const store = new MemoryStore({
@@ -124,11 +124,11 @@ await store.add(['user_123'], {
 
 ```typescript
 // OpenAI (default)
-import { openaiEmbeddings } from 'engram-ai';
+import { openaiEmbeddings } from 'memento-ai';
 const embeddings = openaiEmbeddings();
 
 // Via Helicone (observability)
-import { heliconeEmbeddings } from 'engram-ai';
+import { heliconeEmbeddings } from 'memento-ai';
 const embeddings = heliconeEmbeddings({
   heliconeKey: process.env.HELICONE_API_KEY!,
 });
@@ -170,12 +170,12 @@ interface Memory {
 |----------|-------------|---------|
 | `OPENAI_API_KEY` | Required for embeddings | — |
 | `DATABASE_URL` | Postgres connection (optional) | Uses SQLite |
-| `ENGRAM_DB_PATH` | Custom SQLite path | `~/.engram/memories.db` |
+| `ENGRAM_DB_PATH` | Custom SQLite path | `~/.memento/memories.db` |
 | `ENGRAM_NAMESPACE` | Default namespace (comma-separated) | `default` |
 
 ## Cross-Language Compatibility
 
-This package uses the same database schema as Python engram-ai. You can:
+This package uses the same database schema as Python memento-ai. You can:
 
 - Write memories from Python, read from TypeScript
 - Share a database between Python and TypeScript services

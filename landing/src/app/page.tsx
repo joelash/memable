@@ -22,7 +22,7 @@ import { useRef } from "react";
 
 const BOOKING_URL = "https://calendar.superhuman.com/book/11SzDnK01g1VgPEI2w/FtV5Q";
 
-const pythonCode = `<span class="token-keyword">from</span> engram_ai <span class="token-keyword">import</span> build_store, MemoryCreate
+const pythonCode = `<span class="token-keyword">from</span> memento_ai <span class="token-keyword">import</span> build_store, MemoryCreate
 
 <span class="token-keyword">with</span> <span class="token-function">build_store</span>(<span class="token-string">"postgresql://..."</span>) <span class="token-keyword">as</span> store:
     <span class="token-comment"># Remember something</span>
@@ -34,7 +34,7 @@ const pythonCode = `<span class="token-keyword">from</span> engram_ai <span clas
     <span class="token-comment"># Recall it later</span>
     memories = store.<span class="token-function">search</span>(namespace, <span class="token-string">"user preferences"</span>)`;
 
-const typescriptCode = `<span class="token-keyword">import</span> { MemoryStore, createOpenAIEmbeddings } <span class="token-keyword">from</span> <span class="token-string">'engram-ai-js'</span>;
+const typescriptCode = `<span class="token-keyword">import</span> { MemoryStore, createOpenAIEmbeddings } <span class="token-keyword">from</span> <span class="token-string">'memento-ai'</span>;
 <span class="token-keyword">import</span> { neon } <span class="token-keyword">from</span> <span class="token-string">'@neondatabase/serverless'</span>;
 
 <span class="token-keyword">const</span> store = <span class="token-keyword">new</span> <span class="token-function">MemoryStore</span>(<span class="token-function">neon</span>(DATABASE_URL), embeddings);
@@ -48,12 +48,12 @@ const typescriptCode = `<span class="token-keyword">import</span> { MemoryStore,
 <span class="token-comment">// Recall it later</span>
 <span class="token-keyword">const</span> memories = <span class="token-keyword">await</span> store.<span class="token-function">search</span>(namespace, <span class="token-string">"user preferences"</span>);`;
 
-const mcpCode = `<span class="token-comment">// Zero-config: memories stored locally in ~/.engram/</span>
+const mcpCode = `<span class="token-comment">// Zero-config: memories stored locally in ~/.memento/</span>
 {
   <span class="token-string">"mcpServers"</span>: {
-    <span class="token-string">"engram"</span>: {
+    <span class="token-string">"memento"</span>: {
       <span class="token-string">"command"</span>: <span class="token-string">"npx"</span>,
-      <span class="token-string">"args"</span>: [<span class="token-string">"engram-ai-mcp"</span>],
+      <span class="token-string">"args"</span>: [<span class="token-string">"memento-mcp"</span>],
       <span class="token-string">"env"</span>: {
         <span class="token-string">"OPENAI_API_KEY"</span>: <span class="token-string">"sk-..."</span>
       }
@@ -106,14 +106,14 @@ export default function Home() {
               <Brain className="w-5 h-5 text-white" />
             </div>
             <span className="font-semibold text-lg text-[var(--foreground)]">
-              engram<span className="text-purple-500">-ai</span>
+              memento<span className="text-purple-500">-ai</span>
             </span>
           </a>
           <div className="flex items-center gap-4">
-            <a href="https://github.com/joelash/engram-ai" className="text-[var(--muted)] hover:text-[var(--foreground)] transition-colors text-sm hidden sm:block">
+            <a href="https://github.com/joelash/memento-ai" className="text-[var(--muted)] hover:text-[var(--foreground)] transition-colors text-sm hidden sm:block">
               GitHub
             </a>
-            <a href="https://github.com/joelash/engram-ai#quick-start" className="text-[var(--muted)] hover:text-[var(--foreground)] transition-colors text-sm hidden sm:block">
+            <a href="https://github.com/joelash/memento-ai#quick-start" className="text-[var(--muted)] hover:text-[var(--foreground)] transition-colors text-sm hidden sm:block">
               Docs
             </a>
             <ThemeToggle />
@@ -162,7 +162,7 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-wrap items-center justify-center gap-4"
           >
-            <ShimmerButton href="https://github.com/joelash/engram-ai">
+            <ShimmerButton href="https://github.com/joelash/memento-ai">
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
               </svg>
@@ -299,7 +299,7 @@ export default function Home() {
               Don&apos;t want to manage your own database?
             </p>
             <a
-              href="mailto:joel@friedman.xyz?subject=Interested%20in%20hosted%20engram-ai&body=I%27m%20interested%20in%20a%20hosted%20version%20of%20engram-ai.%0A%0AMy%20use%20case%3A%20"
+              href="mailto:joel@friedman.xyz?subject=Interested%20in%20hosted%20memento-ai&body=I%27m%20interested%20in%20a%20hosted%20version%20of%20memento-ai.%0A%0AMy%20use%20case%3A%20"
               className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors"
             >
               Interested in a hosted option? Let me know <ArrowRight className="w-4 h-4" />
@@ -318,7 +318,7 @@ export default function Home() {
                   <Brain className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-semibold text-lg text-[var(--foreground)]">
-                  engram<span className="text-purple-500">-ai</span>
+                  memento<span className="text-purple-500">-ai</span>
                 </span>
               </div>
               <p className="text-[var(--muted)] text-sm max-w-md">
@@ -344,7 +344,7 @@ export default function Home() {
               @joelash
             </a>{" "}
             ·{" "}
-            <a href="https://github.com/joelash/engram-ai" className="hover:text-[var(--foreground)] transition-colors">
+            <a href="https://github.com/joelash/memento-ai" className="hover:text-[var(--foreground)] transition-colors">
               GitHub
             </a>{" "}
             · MIT License

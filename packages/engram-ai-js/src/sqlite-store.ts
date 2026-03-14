@@ -24,7 +24,7 @@ import { EmbeddingsProvider } from './store.js';
  * Configuration for SQLiteMemoryStore.
  */
 export interface SQLiteMemoryStoreConfig {
-  /** Path to SQLite database file. Defaults to ~/.engram/memories.db */
+  /** Path to SQLite database file. Defaults to ~/.memento/memories.db */
   dbPath?: string;
   /** Embeddings provider for semantic search. */
   embeddings: EmbeddingsProvider;
@@ -63,7 +63,7 @@ export class SQLiteMemoryStore {
   private embeddings: EmbeddingsProvider;
 
   constructor(config: SQLiteMemoryStoreConfig) {
-    this.dbPath = config.dbPath ?? join(homedir(), '.engram', 'memories.db');
+    this.dbPath = config.dbPath ?? join(homedir(), '.memento', 'memories.db');
     this.embeddings = config.embeddings;
   }
 
@@ -374,7 +374,7 @@ export class SQLiteMemoryStore {
 
 /**
  * Create a SQLite memory store with default settings.
- * Zero-config: uses ~/.engram/memories.db
+ * Zero-config: uses ~/.memento/memories.db
  */
 export function createSQLiteStore(embeddings: EmbeddingsProvider, dbPath?: string): SQLiteMemoryStore {
   return new SQLiteMemoryStore({ embeddings, dbPath });
