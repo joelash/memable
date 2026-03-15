@@ -19,7 +19,7 @@ Add memory to Claude Desktop, Cursor, or any MCP tool — **zero config**:
 ```json
 {
   "mcpServers": {
-    .memento": {
+    "memento": {
       "command": "npx",
       "args": ["memento-ai-mcp"],
       "env": {
@@ -39,7 +39,7 @@ For cloud sync or multi-device, add `DATABASE_URL`:
 ```json
 {
   "mcpServers": {
-    .memento": {
+    "memento": {
       "command": "npx",
       "args": ["memento-ai-mcp"],
       "env": {
