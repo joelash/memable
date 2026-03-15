@@ -1,6 +1,6 @@
 # Performance Tests
 
-These tests measure throughput, storage growth, and API costs for engram-ai.
+These tests measure throughput, storage growth, and API costs for memento-ai.
 
 ## Running Performance Tests
 

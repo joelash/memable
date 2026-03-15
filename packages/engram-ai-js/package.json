@@ -1,6 +1,6 @@
 {
   "name": "memento-ai",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Long-term semantic memory for AI agents (TypeScript)",
   "type": "module",
   "main": "./dist/index.js",

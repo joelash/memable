@@ -5,8 +5,8 @@ Memory retrieval with recency weighting and context formatting.
 from datetime import UTC, datetime
 from typing import Any
 
-from engram_ai.schema import Durability, Memory, MemoryQuery, MemoryType
-from engram_ai.store import SemanticMemoryStore
+from memento_ai.schema import Durability, Memory, MemoryQuery, MemoryType
+from memento_ai.store import SemanticMemoryStore
 
 
 class RetrievalResult:

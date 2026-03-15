@@ -1,5 +1,5 @@
 """
-Storage growth tests for engram-ai.
+Storage growth tests for memento-ai.
 
 Measures how database size grows relative to memory count and content.
 
@@ -13,7 +13,7 @@ from uuid import uuid4
 
 import pytest
 
-from engram_ai import Durability, MemoryCreate, build_sqlite_store, build_duckdb_store
+from memento_ai import Durability, MemoryCreate, build_sqlite_store, build_duckdb_store
 
 # Skip if no API key
 pytestmark = pytest.mark.skipif(
@@ -122,7 +122,7 @@ class TestStorageGrowth:
             size_after_initial = get_file_size_kb(db_path)
 
             # Update each memory (creates version chain)
-            from engram_ai.schema import MemoryUpdate
+            from memento_ai.schema import MemoryUpdate
             for mem in memories:
                 store.update(namespace, mem.id, MemoryUpdate(
                     text=f"Updated fact replacing {mem.id}",

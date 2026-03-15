@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 
-from engram_ai.schema import Durability, MemoryCreate, MemorySource, MemoryType
+from memento_ai.schema import Durability, MemoryCreate, MemorySource, MemoryType
 
 if TYPE_CHECKING:
     from langchain_core.language_models import BaseChatModel

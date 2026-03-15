@@ -4,7 +4,7 @@ Unit tests for memory_type filtering in store search.
 
 import pytest
 
-from engram_ai import (
+from memento_ai import (
     MemoryCreate,
     MemoryQuery,
     MemoryType,

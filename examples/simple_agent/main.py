@@ -20,8 +20,8 @@ from dotenv import load_dotenv
 # Load .env file if present
 load_dotenv()
 
-from engram_ai import build_postgres_store  # noqa: E402
-from engram_ai.graph import build_memory_graph  # noqa: E402
+from memento_ai import build_postgres_store  # noqa: E402
+from memento_ai.graph import build_memory_graph  # noqa: E402
 
 
 def main():
@@ -89,8 +89,8 @@ def demo_memories():
         print("ERROR: DATABASE_URL not set")
         return
 
-    from engram_ai import MemoryCreate
-    from engram_ai.schema import Durability
+    from memento_ai import MemoryCreate
+    from memento_ai.schema import Durability
 
     with build_postgres_store(db_url) as store:
         store.setup()

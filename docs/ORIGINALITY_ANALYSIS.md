@@ -1,11 +1,11 @@
-# Originality Analysis: engram-ai vs Similar OSS Projects
+# Originality Analysis: memento-ai vs Similar OSS Projects
 
 **Date:** 2026-02-09  
-**Purpose:** Document architectural differences and originality of engram-ai compared to existing open-source AI memory libraries.
+**Purpose:** Document architectural differences and originality of memento-ai compared to existing open-source AI memory libraries.
 
 ## Executive Summary
 
-engram-ai is an **original implementation** designed specifically for LangGraph integration. While it solves similar problems as other memory libraries (mem0, memary, letta), its architecture, data model, and implementation are distinct. Key differentiators:
+memento-ai is an **original implementation** designed specifically for LangGraph integration. While it solves similar problems as other memory libraries (mem0, memary, letta), its architecture, data model, and implementation are distinct. Key differentiators:
 
 1. **LangGraph-native design** with pre-built nodes and graphs
 2. **Version chains** for contradiction handling (audit trail, not soft delete)
@@ -22,7 +22,7 @@ engram-ai is an **original implementation** designed specifically for LangGraph 
 | mem0 | mem0ai/mem0 | ~25k | General-purpose memory layer |
 | memary | kingjulio8238/memary | ~2k | Entity extraction + knowledge graphs |
 | letta | letta-ai/letta | ~15k | Context window management (formerly MemGPT) |
-| **engram-ai** | joelash/engram-ai | new | LangGraph-native semantic memory |
+| **memento-ai** | joelash/memento-ai | new | LangGraph-native semantic memory |
 
 ---
 
@@ -83,13 +83,13 @@ memory = Memory(blocks=[
 - Memory edited via tool calls to the agent
 - Summarization for compaction
 
-### engram-ai
+### memento-ai
 
 **Pattern:** LangGraph-native store with durability tiers and version chains.
 
 ```python
-# engram-ai pattern
-from engram_ai import build_store, MemoryCreate, Durability
+# memento-ai pattern
+from memento_ai import build_store, MemoryCreate, Durability
 
 with build_store("postgresql://...") as store:
     store.add(namespace, MemoryCreate(
@@ -144,7 +144,7 @@ class Block(BaseModel):
     limit: int  # Character limit
 ```
 
-**engram-ai:**
+**memento-ai:**
 ```python
 class Memory(BaseModel):
     id: UUID
@@ -162,10 +162,10 @@ class Memory(BaseModel):
 ```
 
 **Key differences:**
-- engram-ai has **durability classification** (unique)
-- engram-ai has **version chains** for contradiction handling (unique)
-- engram-ai has **temporal validity** fields (unique)
-- engram-ai has **confidence scores** with source tracking
+- memento-ai has **durability classification** (unique)
+- memento-ai has **version chains** for contradiction handling (unique)
+- memento-ai has **temporal validity** fields (unique)
+- memento-ai has **confidence scores** with source tracking
 
 ---
 
@@ -189,7 +189,7 @@ Return the facts and preferences in a json format...
 - No confidence scoring
 - No temporal estimation
 
-### engram-ai EXTRACTION_SYSTEM_PROMPT
+### memento-ai EXTRACTION_SYSTEM_PROMPT
 
 ```
 You are a memory extraction system...
@@ -226,7 +226,7 @@ Return a JSON object with this structure:
 
 ## Storage Backend Comparison
 
-| Feature | mem0 | memary | letta | engram-ai |
+| Feature | mem0 | memary | letta | memento-ai |
 |---------|------|--------|-------|-----------|
 | Postgres | ✅ (via vector stores) | ❌ | ✅ | ✅ (pgvector) |
 | SQLite | ✅ | ❌ | ✅ | ✅ (sqlite-vec) |
@@ -237,7 +237,7 @@ Return a JSON object with this structure:
 | Qdrant | ✅ | ❌ | ✅ | ❌ |
 | Chroma | ✅ | ✅ | ✅ | ❌ |
 
-**engram-ai's backend pattern:**
+**memento-ai's backend pattern:**
 ```python
 # Unified interface via URL scheme detection
 with build_store("postgresql://...") as store: ...
@@ -249,7 +249,7 @@ with build_store(":memory:") as store: ...  # Testing
 
 ---
 
-## Unique engram-ai Features
+## Unique memento-ai Features
 
 ### 1. Version Chains (Contradiction Handling)
 
@@ -284,7 +284,7 @@ results = store.search(namespace, query)  # Only returns valid memories
 ### 3. LangGraph Integration
 
 ```python
-from engram_ai.graph import build_memory_graph
+from memento_ai.graph import build_memory_graph
 
 # Pre-built graph with memory nodes
 graph = build_memory_graph()
@@ -326,7 +326,7 @@ These patterns are common across all memory libraries and represent industry-sta
 
 ## Conclusion
 
-**engram-ai is an original implementation** with several unique features:
+**memento-ai is an original implementation** with several unique features:
 
 1. **Durability tiers** with automatic classification
 2. **Version chains** for audit trails

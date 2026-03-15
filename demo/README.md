@@ -1,4 +1,4 @@
-# engram-ai Demo
+# memento-ai Demo
 
 Interactive demo with chat interface and live memory visualization.
 
@@ -13,7 +13,7 @@ cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 
-# Install deps (including engram-ai from parent)
+# Install deps (including memento-ai from parent)
 pip install fastapi uvicorn python-dotenv
 pip install -e ../..
 
@@ -52,7 +52,7 @@ Frontend runs at http://localhost:5173
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  🧠 engram-ai demo                      [Clear]     │
+│  🧠 memento-ai demo                      [Clear]     │
 ├─────────────────────────┬───────────────────────────┤
 │                         │  🧠 Memories (3)          │
 │  You: I'm Joel          │  ┌─────────────────────┐  │

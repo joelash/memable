@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 from langgraph.store.postgres import PostgresStore
 
-from engram_ai.backends.base import BaseStore, StoreItem
+from memento_ai.backends.base import BaseStore, StoreItem
 
 if TYPE_CHECKING:
     from langchain_core.embeddings import Embeddings

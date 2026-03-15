@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "engram-ai"
+name = "memento-ai"
 version = "1.6.0"
 description = "Reusable semantic memory library for LangGraph agents with PostgreSQL/pgvector and SQLite backends"
 readme = "README.md"
@@ -49,14 +49,14 @@ dev = [
     "duckdb>=1.0.0",  # for DuckDB tests
 ]
 all = [
-    "engram-ai[sqlite,duckdb,dev]",
+    "memento-ai[sqlite,duckdb,dev]",
 ]
 
 [project.urls]
-Repository = "https://github.com/joelash/engram-ai"
+Repository = "https://github.com/joelash/memento-ai"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/engram_ai"]
+packages = ["src/memento_ai"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

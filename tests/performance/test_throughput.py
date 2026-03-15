@@ -1,5 +1,5 @@
 """
-Throughput performance tests for engram-ai.
+Throughput performance tests for memento-ai.
 
 Measures operations per second for core operations at various database sizes.
 
@@ -13,7 +13,7 @@ from uuid import uuid4
 
 import pytest
 
-from engram_ai import Durability, MemoryCreate, build_sqlite_store
+from memento_ai import Durability, MemoryCreate, build_sqlite_store
 
 # Skip if no API key (these tests need real embeddings)
 pytestmark = pytest.mark.skipif(

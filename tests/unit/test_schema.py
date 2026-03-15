@@ -7,7 +7,7 @@ from uuid import uuid4
 
 import pytest
 
-from engram_ai.schema import (
+from memento_ai.schema import (
     Durability,
     Memory,
     MemoryCreate,

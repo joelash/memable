@@ -13,10 +13,10 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from engram_ai.backends.base import BaseStore
-from engram_ai.backends.factory import build_store as _build_backend
-from engram_ai.backends.postgres import DEFAULT_EMBED_DIMS, DEFAULT_EMBED_MODEL
-from engram_ai.schema import (
+from memento_ai.backends.base import BaseStore
+from memento_ai.backends.factory import build_store as _build_backend
+from memento_ai.backends.postgres import DEFAULT_EMBED_DIMS, DEFAULT_EMBED_MODEL
+from memento_ai.schema import (
     Memory,
     MemoryCreate,
     MemoryQuery,
@@ -167,7 +167,7 @@ def build_sqlite_store(
 
     Args:
         db_path: Path to SQLite database. Falls back to MEMORY_DB_PATH env var
-                 or "engram.db".
+                 or "memento.db".
         embeddings: LangChain Embeddings instance. If None, uses OpenAIEmbeddings.
         embed_model: OpenAI embedding model name (only used if embeddings is None).
         dims: Embedding dimensions.
@@ -188,7 +188,7 @@ def build_sqlite_store(
             store.add(namespace, memory)
     """
     if db_path is None:
-        db_path = os.environ.get("MEMORY_DB_PATH", "engram.db")
+        db_path = os.environ.get("MEMORY_DB_PATH", "memento.db")
 
     url = ":memory:" if db_path == ":memory:" else f"sqlite:///{db_path}"
 
@@ -217,7 +217,7 @@ def build_duckdb_store(
 
     Args:
         db_path: Path to DuckDB database, ":memory:", or MotherDuck URL.
-                 Falls back to DUCKDB_PATH env var or "engram.duckdb".
+                 Falls back to DUCKDB_PATH env var or "memento.duckdb".
         embeddings: LangChain Embeddings instance. If None, uses OpenAIEmbeddings.
         embed_model: OpenAI embedding model name (only used if embeddings is None).
         dims: Embedding dimensions.
@@ -243,7 +243,7 @@ def build_duckdb_store(
             store.add(namespace, memory)
     """
     if db_path is None:
-        db_path = os.environ.get("DUCKDB_PATH", "engram.duckdb")
+        db_path = os.environ.get("DUCKDB_PATH", "memento.duckdb")
 
     # Handle special cases
     if db_path == ":memory:":

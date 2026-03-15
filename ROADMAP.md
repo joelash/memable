@@ -1,6 +1,6 @@
 # Roadmap
 
-Ideas and planned features for engram-ai.
+Ideas and planned features for memento-ai.
 
 ## v0.2.0 — Batch & Async
 

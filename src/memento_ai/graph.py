@@ -16,7 +16,7 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, MessagesState, StateGraph
 from langgraph.store.base import BaseStore
 
-from engram_ai.nodes import retrieve_memories_node, store_memories_node
+from memento_ai.nodes import retrieve_memories_node, store_memories_node
 
 
 def _default_llm_node(
@@ -56,8 +56,8 @@ def build_memory_graph(
         Compiled StateGraph. Call with store= to inject memory store.
 
     Example:
-        from engram_ai import build_postgres_store
-        from engram_ai.graph import build_memory_graph
+        from memento_ai import build_postgres_store
+        from memento_ai.graph import build_memory_graph
 
         store = build_postgres_store(DATABASE_URL)
         store.setup()

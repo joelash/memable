@@ -1,1 +1,1 @@
-"""Performance tests for engram-ai."""
+"""Performance tests for memento-ai."""

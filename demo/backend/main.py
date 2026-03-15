@@ -1,5 +1,5 @@
 """
-engram-ai Demo API
+memento-ai Demo API
 
 FastAPI backend for the memory demo.
 """
@@ -16,9 +16,9 @@ from langchain_openai import ChatOpenAI
 from psycopg import OperationalError
 from pydantic import BaseModel
 
-from engram_ai import build_postgres_store
-from engram_ai.extraction import MemoryExtractor
-from engram_ai.schema import Memory
+from memento_ai import build_postgres_store
+from memento_ai.extraction import MemoryExtractor
+from memento_ai.schema import Memory
 
 load_dotenv()
 
@@ -89,7 +89,7 @@ async def lifespan(app: FastAPI):
             pass
 
 
-app = FastAPI(title="engram-ai Demo", lifespan=lifespan)
+app = FastAPI(title="memento-ai Demo", lifespan=lifespan)
 
 # CORS for local dev
 app.add_middleware(
@@ -136,7 +136,7 @@ class MemoryResponse(BaseModel):
 
 @app.get("/")
 def root():
-    return {"status": "ok", "service": "engram-ai demo"}
+    return {"status": "ok", "service": "memento-ai demo"}
 
 
 @app.post("/chat", response_model=ChatResponse)

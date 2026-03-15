@@ -3,7 +3,7 @@ Unit tests for consolidation module.
 """
 
 
-from engram_ai.consolidation import ConsolidationResult, ConsolidationStrategy
+from memento_ai.consolidation import ConsolidationResult, ConsolidationStrategy
 
 
 class TestConsolidationStrategy:

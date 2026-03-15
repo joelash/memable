@@ -1,12 +1,12 @@
 """
-engram-ai: Reusable semantic memory for LangGraph agents.
+memento-ai: Reusable semantic memory for LangGraph agents.
 
 Supports multiple backends:
 - PostgreSQL with pgvector (production)
 - SQLite with sqlite-vec (development/testing)
 """
 
-from engram_ai.schema import (
+from memento_ai.schema import (
     Durability,
     Memory,
     MemoryCreate,
@@ -15,7 +15,7 @@ from engram_ai.schema import (
     MemoryType,
     MemoryUpdate,
 )
-from engram_ai.store import (
+from memento_ai.store import (
     SemanticMemoryStore,
     build_duckdb_store,
     build_postgres_store,

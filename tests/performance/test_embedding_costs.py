@@ -1,5 +1,5 @@
 """
-Embedding API cost tests for engram-ai.
+Embedding API cost tests for memento-ai.
 
 Tracks OpenAI API usage per operation to help estimate costs.
 
@@ -12,7 +12,7 @@ from uuid import uuid4
 
 import pytest
 
-from engram_ai import Durability, MemoryCreate, build_sqlite_store
+from memento_ai import Durability, MemoryCreate, build_sqlite_store
 
 
 class TestEmbeddingCosts:

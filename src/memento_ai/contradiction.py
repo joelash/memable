@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING
 from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import BaseModel, Field
 
-from engram_ai.schema import Memory, MemorySource, MemoryUpdate
-from engram_ai.store import SemanticMemoryStore
+from memento_ai.schema import Memory, MemorySource, MemoryUpdate
+from memento_ai.store import SemanticMemoryStore
 
 if TYPE_CHECKING:
     from langchain_core.language_models import BaseChatModel
@@ -255,7 +255,7 @@ def add_memory_with_contradiction_check(
     Returns:
         Tuple of (created Memory, ContradictionCheck if contradiction was resolved).
     """
-    from engram_ai.schema import MemoryCreate
+    from memento_ai.schema import MemoryCreate
 
     detector = detector or ContradictionDetector()
 

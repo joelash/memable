@@ -11,7 +11,7 @@ import struct
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from engram_ai.backends.base import BaseStore, StoreItem
+from memento_ai.backends.base import BaseStore, StoreItem
 
 if TYPE_CHECKING:
     from langchain_core.embeddings import Embeddings
@@ -346,7 +346,7 @@ def build_sqlite_backend(
 
     Args:
         db_path: Path to database file. Falls back to MEMORY_DB_PATH env var
-                 or "engram.db" in current directory.
+                 or "memento.db" in current directory.
         embeddings: LangChain Embeddings instance. If None, uses OpenAIEmbeddings.
         embed_model: OpenAI embedding model (only used if embeddings is None).
         dims: Embedding dimensions.
@@ -356,7 +356,7 @@ def build_sqlite_backend(
         SQLiteBackend instance.
     """
     if db_path is None:
-        db_path = os.environ.get("MEMORY_DB_PATH", "engram.db")
+        db_path = os.environ.get("MEMORY_DB_PATH", "memento.db")
 
     return SQLiteBackend(
         db_path=db_path,

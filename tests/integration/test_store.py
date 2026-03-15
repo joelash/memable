@@ -10,7 +10,7 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from engram_ai.schema import (
+from memento_ai.schema import (
     Durability,
     Memory,
     MemoryCreate,

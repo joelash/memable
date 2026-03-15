@@ -1,5 +1,5 @@
 """
-Backend storage implementations for engram-ai.
+Backend storage implementations for memento-ai.
 
 Supported backends:
 - PostgreSQL (via LangGraph PostgresStore + pgvector)
@@ -8,7 +8,7 @@ Supported backends:
 - MotherDuck (cloud DuckDB)
 """
 
-from engram_ai.backends.base import BaseStore, StoreItem
-from engram_ai.backends.factory import build_store
+from memento_ai.backends.base import BaseStore, StoreItem
+from memento_ai.backends.factory import build_store
 
 __all__ = ["BaseStore", "StoreItem", "build_store"]

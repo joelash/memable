@@ -14,13 +14,13 @@ from langchain_core.runnables import RunnableConfig
 from langgraph.graph import MessagesState
 from langgraph.store.base import BaseStore
 
-from engram_ai.contradiction import (
+from memento_ai.contradiction import (
     ContradictionDetector,
     add_memory_with_contradiction_check,
 )
-from engram_ai.extraction import MemoryExtractor
-from engram_ai.retrieval import build_memory_context, retrieve_memories
-from engram_ai.store import SemanticMemoryStore
+from memento_ai.extraction import MemoryExtractor
+from memento_ai.retrieval import build_memory_context, retrieve_memories
+from memento_ai.store import SemanticMemoryStore
 
 
 def retrieve_memories_node(
@@ -243,7 +243,7 @@ def consolidate_memories_node(
     Returns:
         Empty dict (consolidation is a side effect).
     """
-    from engram_ai.consolidation import consolidate_memories
+    from memento_ai.consolidation import consolidate_memories
 
     user_id = config["configurable"]["user_id"]
     org_id = config["configurable"].get("org_id")

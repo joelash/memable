@@ -1,4 +1,4 @@
-# engram-ai Testing Checklist
+# memento-ai Testing Checklist
 
 Complete testing guide for Python library, TypeScript client, and MCP server.
 
@@ -16,7 +16,7 @@ Complete testing guide for Python library, TypeScript client, and MCP server.
 
 ### Unit Tests (No DB Required)
 ```bash
-cd ~/src/personal/engram-ai
+cd ~/src/personal/memento-ai
 source .venv/bin/activate
 pytest tests/unit/ -v
 ```
@@ -39,11 +39,11 @@ pytest tests/ -v
 
 ---
 
-## 2. engram-ai-js TypeScript Tests
+## 2. memento-ai-js TypeScript Tests
 
 ### Build Check
 ```bash
-cd ~/src/personal/engram-ai/packages/engram-ai-js
+cd ~/src/personal/memento-ai/packages/memento-ai-js
 pnpm install
 pnpm build
 ```
@@ -117,7 +117,7 @@ npx tsx test-integration.ts
 
 ### Build MCP Server
 ```bash
-cd ~/src/personal/engram-ai/packages/engram-ai-js
+cd ~/src/personal/memento-ai/packages/memento-ai-js
 pnpm build
 ```
 
@@ -145,11 +145,11 @@ The MCP server exposes these tools:
 ```bash
 cd ~/src/personal/one_silly_app/colorGenie
 
-# Add engram-ai-js as dependency
-pnpm add file:../../engram-ai/packages/engram-ai-js
+# Add memento-ai-js as dependency
+pnpm add file:../../memento-ai/packages/memento-ai-js
 
 # Or link for development
-pnpm link ../../engram-ai/packages/engram-ai-js
+pnpm link ../../memento-ai/packages/memento-ai-js
 ```
 
 ### Integration Points to Test
@@ -161,7 +161,7 @@ pnpm link ../../engram-ai/packages/engram-ai-js
 ### Test Flow
 ```typescript
 // In ColorGenie backend
-import { MemoryStore, createOpenAIEmbeddings } from 'engram-ai-js';
+import { MemoryStore, createOpenAIEmbeddings } from 'memento-ai-js';
 import { neon } from '@neondatabase/serverless';
 
 // During feedback submission
@@ -195,7 +195,7 @@ CREATE SCHEMA tenant_b;
 
 ### Python Test
 ```python
-from engram_ai import build_store, MemoryCreate
+from memento_ai import build_store, MemoryCreate
 
 # Tenant A
 with build_store("postgresql://...", schema="tenant_a") as store_a:
@@ -221,7 +221,7 @@ with build_store("postgresql://...", schema="tenant_a") as store_a:
 
 1. **Python: Add memory**
 ```python
-from engram_ai import build_store, MemoryCreate
+from memento_ai import build_store, MemoryCreate
 
 with build_store("postgresql://...") as store:
     store.setup()
@@ -245,7 +245,7 @@ console.log(results[0]?.value.text);
 
 ### Run Performance Tests
 ```bash
-cd ~/src/personal/engram-ai
+cd ~/src/personal/memento-ai
 pytest tests/performance/ -v -s
 ```
 
@@ -271,7 +271,7 @@ pytest tests/performance/ -v -s
 - **Runs on:** Push to main, PRs
 - **Services:** PostgreSQL 15 with pgvector
 
-Check status: https://github.com/joelash/engram-ai/actions
+Check status: https://github.com/joelash/memento-ai/actions
 
 ---
 
@@ -286,7 +286,7 @@ Check status: https://github.com/joelash/engram-ai/actions
 
 ### Recommended: Vercel (quickest)
 ```bash
-cd ~/src/personal/engram-ai/site
+cd ~/src/personal/memento-ai/site
 npx vercel
 ```
 

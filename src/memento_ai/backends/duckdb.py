@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from engram_ai.backends.base import BaseStore, StoreItem
+from memento_ai.backends.base import BaseStore, StoreItem
 
 if TYPE_CHECKING:
     from langchain_core.embeddings import Embeddings
@@ -254,7 +254,7 @@ def build_duckdb_backend(
 
     Args:
         db_path: Path to database file, ":memory:", or MotherDuck URL.
-                 Falls back to DUCKDB_PATH env var or "engram.duckdb".
+                 Falls back to DUCKDB_PATH env var or "memento.duckdb".
         embeddings: LangChain Embeddings instance. If None, uses OpenAIEmbeddings.
         embed_model: OpenAI embedding model (only used if embeddings is None).
         dims: Embedding dimensions.
@@ -279,7 +279,7 @@ def build_duckdb_backend(
         backend = build_duckdb_backend("./data.duckdb", embeddings=BedrockEmbeddings())
     """
     if db_path is None:
-        db_path = os.environ.get("DUCKDB_PATH", "engram.duckdb")
+        db_path = os.environ.get("DUCKDB_PATH", "memento.duckdb")
 
     return DuckDBBackend(
         db_path=db_path,

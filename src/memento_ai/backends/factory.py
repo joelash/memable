@@ -8,10 +8,10 @@ import os
 from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
-from engram_ai.backends.base import BaseStore
-from engram_ai.backends.duckdb import DuckDBBackend
-from engram_ai.backends.postgres import DEFAULT_EMBED_DIMS, DEFAULT_EMBED_MODEL, PostgresBackend
-from engram_ai.backends.sqlite import SQLiteBackend
+from memento_ai.backends.base import BaseStore
+from memento_ai.backends.duckdb import DuckDBBackend
+from memento_ai.backends.postgres import DEFAULT_EMBED_DIMS, DEFAULT_EMBED_MODEL, PostgresBackend
+from memento_ai.backends.sqlite import SQLiteBackend
 
 if TYPE_CHECKING:
     from langchain_core.embeddings import Embeddings
@@ -54,7 +54,7 @@ def build_store(
         store = build_store("postgresql://user:pass@host:5432/db")
 
         # SQLite file (development)
-        store = build_store("sqlite:///path/to/engram.db")
+        store = build_store("sqlite:///path/to/memento.db")
         store = build_store("sqlite:///./local.db")  # relative path
 
         # SQLite in-memory (testing)
@@ -128,7 +128,7 @@ def build_store(
                 db_path = db_path[1:]  # Remove leading slash for absolute paths
 
         return SQLiteBackend(
-            db_path=db_path or "engram.db",
+            db_path=db_path or "memento.db",
             embeddings=embeddings,
             embed_model=embed_model,
             dims=dims,
@@ -156,7 +156,7 @@ def build_store(
                 db_path = db_path[1:]
 
         return DuckDBBackend(
-            db_path=db_path or "engram.duckdb",
+            db_path=db_path or "memento.duckdb",
             embeddings=embeddings,
             embed_model=embed_model,
             dims=dims,

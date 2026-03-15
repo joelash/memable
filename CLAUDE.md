@@ -39,21 +39,21 @@ mypy src
 
 ## Architecture Overview
 
-engram-ai is a semantic memory library for LangGraph agents with three storage backends.
+memento-ai is a semantic memory library for LangGraph agents with three storage backends.
 
 ### Core Components
 
-**Schema (`src/engram_ai/schema.py`)**
+**Schema (`src/memento_ai/schema.py`)**
 - `Memory` - Main memory object with durability tiers (core/situational/episodic), temporal validity, version chains, and MemoryType categorization
 - `MemoryCreate`/`MemoryUpdate`/`MemoryQuery` - Input/query types
 - Version chains track supersedes/superseded_by for contradiction handling
 
-**Store (`src/engram_ai/store.py`)**
+**Store (`src/memento_ai/store.py`)**
 - `SemanticMemoryStore` - High-level API wrapping backend stores
 - Factory functions: `build_store()` (auto-detect), `build_postgres_store()`, `build_sqlite_store()`, `build_duckdb_store()`
 - All stores use context managers for connection lifecycle
 
-**Backends (`src/engram_ai/backends/`)**
+**Backends (`src/memento_ai/backends/`)**
 - `BaseStore` - Abstract protocol defining put/get/delete/search operations
 - `PostgresStore` - Production backend using pgvector
 - `SQLiteStore` - Dev/testing backend using sqlite-vec
