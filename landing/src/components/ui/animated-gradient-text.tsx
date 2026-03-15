@@ -15,7 +15,7 @@ export function AnimatedGradientText({
   return (
     <motion.span
       className={cn(
-        "bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 bg-[length:200%_auto] bg-clip-text text-transparent",
+        "bg-gradient-to-r from-orange-500 via-amber-400 to-orange-500 bg-[length:200%_auto] bg-clip-text text-transparent",
         className
       )}
       animate={{

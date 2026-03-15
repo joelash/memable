@@ -10,7 +10,7 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from memento_ai.schema import (
+from memable.schema import (
     Durability,
     Memory,
     MemoryCreate,

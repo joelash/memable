@@ -8,11 +8,11 @@ import os
 
 import pytest
 
-from memento_ai.contradiction import (
+from memable.contradiction import (
     ContradictionDetector,
     add_memory_with_contradiction_check,
 )
-from memento_ai.schema import Memory
+from memable.schema import Memory
 
 
 @pytest.fixture

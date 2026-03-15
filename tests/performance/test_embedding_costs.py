@@ -12,7 +12,7 @@ from uuid import uuid4
 
 import pytest
 
-from memento_ai import Durability, MemoryCreate, build_sqlite_store
+from memable import Durability, MemoryCreate, build_sqlite_store
 
 
 class TestEmbeddingCosts:

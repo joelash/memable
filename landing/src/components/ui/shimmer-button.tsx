@@ -16,7 +16,7 @@ export function ShimmerButton({ children, className, href }: ShimmerButtonProps)
     <Comp
       href={href}
       className={cn(
-        "group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-purple-600 px-6 py-3 font-medium text-white transition-all hover:bg-purple-700",
+        "group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-orange-500 px-6 py-3 font-medium text-white transition-all hover:bg-orange-600",
         className
       )}
     >

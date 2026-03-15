@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from memento_ai import Durability, MemoryCreate, build_duckdb_store, build_store
+from memable import Durability, MemoryCreate, build_duckdb_store, build_store
 
 # Skip all tests if duckdb not installed
 duckdb = pytest.importorskip("duckdb")

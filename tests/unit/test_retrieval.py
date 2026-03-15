@@ -2,8 +2,8 @@
 Unit tests for retrieval module.
 """
 
-from memento_ai.retrieval import RetrievalResult, build_memory_context
-from memento_ai.schema import Durability, Memory, MemoryType
+from memable.retrieval import RetrievalResult, build_memory_context
+from memable.schema import Durability, Memory, MemoryType
 
 
 class TestRetrievalResult:

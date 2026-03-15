@@ -4,7 +4,7 @@ Unit tests for PostgreSQL schema-based isolation.
 
 import pytest
 
-from memento_ai.backends.postgres import _add_schema_to_conn_string
+from memable.backends.postgres import _add_schema_to_conn_string
 
 
 class TestAddSchemaToConnString:
@@ -70,7 +70,7 @@ class TestSchemaParameterIntegration:
 
     def test_build_store_accepts_schema_param(self):
         """Test that build_store accepts schema parameter (smoke test)."""
-        from memento_ai import build_store
+        from memable import build_store
 
         # Just verify the function accepts the parameter without error
         # We can't actually test PostgreSQL without a connection
@@ -80,7 +80,7 @@ class TestSchemaParameterIntegration:
 
     def test_build_postgres_store_accepts_schema_param(self):
         """Test that build_postgres_store accepts schema parameter (smoke test)."""
-        from memento_ai import build_postgres_store
+        from memable import build_postgres_store
 
         import inspect
         sig = inspect.signature(build_postgres_store)

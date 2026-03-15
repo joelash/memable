@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from memento_ai import Durability, MemoryCreate, build_sqlite_store, build_store
+from memable import Durability, MemoryCreate, build_sqlite_store, build_store
 
 
 class TestSQLiteBackend:

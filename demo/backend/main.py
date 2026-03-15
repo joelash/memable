@@ -16,9 +16,9 @@ from langchain_openai import ChatOpenAI
 from psycopg import OperationalError
 from pydantic import BaseModel
 
-from memento_ai import build_postgres_store
-from memento_ai.extraction import MemoryExtractor
-from memento_ai.schema import Memory
+from memable import build_postgres_store
+from memable.extraction import MemoryExtractor
+from memable.schema import Memory
 
 load_dotenv()
 

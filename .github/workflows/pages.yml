@@ -42,7 +42,7 @@ jobs:
         working-directory: landing
         run: pnpm build
         env:
-          NEXT_PUBLIC_BASE_PATH: /memento-ai
+          NEXT_PUBLIC_BASE_PATH: /memable
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

@@ -13,7 +13,7 @@ from uuid import uuid4
 
 import pytest
 
-from memento_ai import Durability, MemoryCreate, build_sqlite_store
+from memable import Durability, MemoryCreate, build_sqlite_store
 
 # Skip if no API key (these tests need real embeddings)
 pytestmark = pytest.mark.skipif(

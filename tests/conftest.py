@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 # Load .env file for API keys
 load_dotenv()
 
-from memento_ai.schema import Durability, Memory, MemoryCreate, MemorySource  # noqa: E402
+from memable.schema import Durability, Memory, MemoryCreate, MemorySource  # noqa: E402
 
 # ============================================================================
 # Unit test fixtures (no external dependencies)
@@ -141,7 +141,7 @@ def semantic_store(postgres_url: str):
     if not os.environ.get("OPENAI_API_KEY"):
         pytest.skip("OPENAI_API_KEY not set")
 
-    from memento_ai.store import build_postgres_store
+    from memable.store import build_postgres_store
 
     with build_postgres_store(postgres_url) as store:
         store.setup()

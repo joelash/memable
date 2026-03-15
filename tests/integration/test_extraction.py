@@ -8,8 +8,8 @@ import os
 
 import pytest
 
-from memento_ai.extraction import MemoryExtractor, extract_memories
-from memento_ai.schema import Durability
+from memable.extraction import MemoryExtractor, extract_memories
+from memable.schema import Durability
 
 
 @pytest.fixture

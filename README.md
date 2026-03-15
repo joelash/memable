@@ -1,11 +1,11 @@
 <p align="center">
-  <img src="assets/memento-hero.png" alt="memento-ai - remember" width="600">
+  <img src="assets/memable-hero.png" alt="memable - AI memory that never forgets" width="600">
 </p>
 
-<h1 align="center">memento-ai</h1>
+<h1 align="center">memable 🐘</h1>
 
 <p align="center">
-  <em>Long-term semantic memory for AI agents. Don't forget.</em>
+  <em>Long-term semantic memory for AI agents. Elephants never forget.</em>
 </p>
 
 ---
@@ -33,22 +33,22 @@ Drop-in long-term memory with:
 ## Installation
 
 ```bash
-pip install memento-ai
+pip install memable
 ```
 
 Or for development:
 
 ```bash
-git clone https://github.com/joelash/memento-ai
-cd memento-ai
+git clone https://github.com/joelash/memable
+cd memable
 pip install -e ".[dev]"
 ```
 
 ## Quick Start
 
 ```python
-from memento_ai import build_postgres_store
-from memento_ai.graph import build_memory_graph
+from memable import build_postgres_store
+from memable.graph import build_memory_graph
 
 # Connect to your Neon/Postgres DB (context manager handles connection lifecycle)
 with build_postgres_store("postgresql://user:pass@host:5432/dbname") as store:
@@ -125,7 +125,7 @@ retrieve_memories(
 ### Memory Consolidation
 
 ```python
-from memento_ai import consolidate_memories
+from memable import consolidate_memories
 
 # Periodic cleanup job
 consolidate_memories(
@@ -141,7 +141,7 @@ consolidate_memories(
 Pre-built nodes for your graph:
 
 ```python
-from memento_ai.nodes import (
+from memable.nodes import (
     retrieve_memories_node,
     store_memories_node,
     consolidate_memories_node,
@@ -207,7 +207,7 @@ DATABASE_URL=postgresql://...    # Postgres connection
 For multi-tenant deployments where each customer needs isolated data, you can use PostgreSQL schemas:
 
 ```python
-from memento_ai import build_store
+from memable import build_store
 
 # Each tenant gets their own schema
 with build_store("postgresql://...", schema="customer_123") as store:
@@ -222,7 +222,7 @@ with build_store("postgresql://...", schema="customer_123") as store:
 
 ### Database Tables
 
-memento-ai uses LangGraph's PostgresStore under the hood, which creates:
+memable uses LangGraph's PostgresStore under the hood, which creates:
 
 | Table | Purpose |
 |-------|---------|
