@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "memento-ai"
-version = "1.6.0"
+version = "1.6.1"
 description = "Reusable semantic memory library for LangGraph agents with PostgreSQL/pgvector and SQLite backends"
 readme = "README.md"
 license = "MIT"
