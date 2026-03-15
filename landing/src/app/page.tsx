@@ -116,9 +116,9 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <a href="/" className="flex items-center gap-2">
             <img 
-              src={`${basePath}/memable-icon.png`} 
+              src={`${basePath}/memable-icon-transparent.png`} 
               alt="memable" 
-              className="w-8 h-8 rounded-lg"
+              className="w-10 h-10 object-contain"
             />
             <span className="font-semibold text-lg text-[var(--foreground)]">
               mem<span className="text-orange-500">able</span>
