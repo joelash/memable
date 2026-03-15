@@ -260,6 +260,31 @@ export default function Home() {
               </div>
             </div>
           </motion.div>
+
+          {/* Cross-App Memory */}
+          <motion.div variants={fadeInUp} className="mt-8 p-6 rounded-xl bg-gradient-to-br from-purple-500/5 to-blue-500/5 border border-purple-500/20">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-2">
+                  <div className="w-10 h-10 rounded-lg bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-lg">🤖</div>
+                  <div className="w-10 h-10 rounded-lg bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-lg">💻</div>
+                  <div className="w-10 h-10 rounded-lg bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-lg">📱</div>
+                </div>
+                <div className="w-8 h-8 flex items-center justify-center">
+                  <ArrowRight className="w-5 h-5 text-purple-400" />
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center">
+                  <Brain className="w-6 h-6 text-purple-400" />
+                </div>
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <h4 className="font-semibold text-[var(--foreground)] mb-1">One memory, every tool</h4>
+                <p className="text-sm text-[var(--muted)]">
+                  Claude Desktop, Cursor, your custom app — they all share the same memory via MCP. Learn something in one place, remember it everywhere.
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </AnimatedSection>
       </section>
 
