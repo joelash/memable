@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "memable"
-version = "1.14.1"
+version = "0.1.2"
 description = "Reusable semantic memory library for LangGraph agents with PostgreSQL/pgvector and SQLite backends"
 readme = "README.md"
 license = "MIT"
