@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "memable"
-version = "0.2.0"
+version = "0.1.1"
 description = "Reusable semantic memory library for LangGraph agents with PostgreSQL/pgvector and SQLite backends"
 readme = "README.md"
 license = "MIT"
@@ -55,8 +55,26 @@ all = [
 [project.urls]
 Repository = "https://github.com/joelash/memento-ai"
 
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "landing/",
+    "packages/",
+    "demo/",
+    "node_modules/",
+    ".git/",
+    "*.egg-info/",
+    "dist/",
+    ".venv/",
+    "hero-options/",
+    "assets/",
+    "docs/",
+    "*.png",
+    "*.jpg",
+    "uv.lock",
+]
+
 [tool.hatch.build.targets.wheel]
-packages = ["src/memento_ai"]
+packages = ["src/memable"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
