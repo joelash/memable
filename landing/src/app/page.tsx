@@ -141,7 +141,7 @@ export default function Home() {
               Docs
             </a>
             <a 
-              href="https://memable-dashboard.vercel.app" 
+              href="https://app.memable.ai" 
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/30 text-purple-400 hover:bg-purple-500/20 transition-colors text-sm font-medium"
@@ -603,7 +603,7 @@ export default function Home() {
               Don&apos;t want to manage your own database? Try memable hosted — dashboard, team spaces, and zero ops.
             </p>
             <a
-              href="https://memable-dashboard.vercel.app"
+              href="https://app.memable.ai"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-500 hover:bg-purple-600 text-white text-sm font-medium transition-colors"
