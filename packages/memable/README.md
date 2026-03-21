@@ -55,10 +55,31 @@ For cloud sync or multi-device, add `DATABASE_URL`:
 
 | Tool | Description |
 |------|-------------|
+| `boot` | Load memory context at session start — call this first! |
 | `remember` | Store a new memory |
 | `recall` | Search memories by semantic similarity |
+| `extract` | Auto-extract memories from conversation text |
 | `list_memories` | List all memories with optional filters |
 | `forget` | Delete a memory by ID |
+
+### Recommended System Prompt
+
+Add this to your Claude Desktop / Cursor system prompt for best results:
+
+```
+You have access to a memory system. Use your MCP tools:
+- Call "boot" at the start of every conversation to load what you know
+- Use "remember" to store facts, preferences, or decisions the user shares
+- Use "recall" to search memories before answering personal questions
+- Use "extract" to capture multiple memories from a conversation
+
+Be proactive — if the user tells you something worth remembering, store it without being asked.
+```
+
+The `boot` tool returns:
+- **Core memories** — permanent facts (always loaded)
+- **Recent memories** — things learned in the last 24 hours
+- **Contextual memories** — relevant to what you're discussing (if context provided)
 
 ## Installation
 

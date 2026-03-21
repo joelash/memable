@@ -200,6 +200,23 @@ export class McpServer {
           required: ['conversation'],
         },
       },
+      {
+        name: 'boot',
+        description: 'Load memory context at session start. Call this at the beginning of every conversation to recall what you know about the user. Returns core memories (always-relevant facts) plus optionally context-relevant memories.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            context: {
+              type: 'string',
+              description: 'Optional context about the current conversation topic to find relevant memories',
+            },
+            includeRecent: {
+              type: 'boolean',
+              description: 'Include recent memories from the last 24 hours (default: true)',
+            },
+          },
+        },
+      },
     ];
   }
 
@@ -228,6 +245,9 @@ export class McpServer {
           break;
         case 'extract':
           result = await this.handleExtract(args);
+          break;
+        case 'boot':
+          result = await this.handleBoot(args);
           break;
         default:
           throw new Error(`Unknown tool: ${name}`);
@@ -382,6 +402,79 @@ export class McpServer {
       message: shouldStore 
         ? `Extracted and stored ${storedMemories.length} memories.`
         : `Extracted ${result.memories.length} memories (not stored).`,
+    };
+  }
+
+  private async handleBoot(args: Record<string, unknown>) {
+    const context = args.context as string | undefined;
+    const includeRecent = args.includeRecent !== false; // default true
+
+    // Helper to format any memory-like object
+    const formatMemory = (m: { id: string; text: string; memoryType?: MemoryType | string | null; durability?: Durability | string | null; confidence?: number }) => ({
+      id: m.id,
+      text: m.text,
+      type: (typeof m.memoryType === 'string' ? m.memoryType : m.memoryType) ?? 'fact',
+      ...(m.confidence !== undefined && { relevance: m.confidence }),
+    });
+
+    // 1. Always load core memories (permanent, always-relevant facts)
+    const allMemories = await this.store.listAll(this.namespace);
+    const coreMemories = allMemories.filter((m) => m.durability === Durability.CORE);
+
+    // 2. Get recent memories (last 24 hours) if requested
+    const recentMemories: typeof allMemories = [];
+    if (includeRecent) {
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const recent = allMemories.filter(
+        (m) => m.durability !== Durability.CORE && m.createdAt && new Date(m.createdAt) > oneDayAgo
+      );
+      recentMemories.push(...recent.slice(0, 5)); // Max 5 recent
+    }
+
+    // 3. Search for context-relevant memories if context provided
+    let contextMemories: Awaited<ReturnType<typeof this.store.search>> = [];
+    if (context) {
+      const searchResults = await this.store.search(this.namespace, {
+        query: context,
+        limit: 5,
+      });
+      // Filter out any that are already in core or recent
+      const coreIds = new Set(coreMemories.map((m) => m.id));
+      const recentIds = new Set(recentMemories.map((m) => m.id));
+      contextMemories = searchResults.filter(
+        (m) => !coreIds.has(m.id) && !recentIds.has(m.id)
+      );
+    }
+
+    // 4. Build summary sections
+    const sections: string[] = [];
+    
+    if (coreMemories.length > 0) {
+      sections.push(`## Core Knowledge (${coreMemories.length} memories)\nThese are permanent facts you should always remember.`);
+    }
+    
+    if (recentMemories.length > 0) {
+      sections.push(`## Recent Context (${recentMemories.length} memories)\nThings learned in the last 24 hours.`);
+    }
+    
+    if (contextMemories.length > 0) {
+      sections.push(`## Relevant to "${context}" (${contextMemories.length} memories)\nMemories related to the current conversation topic.`);
+    }
+
+    const totalCount = coreMemories.length + recentMemories.length + contextMemories.length;
+
+    return {
+      booted: true,
+      totalMemories: totalCount,
+      summary: totalCount > 0 
+        ? sections.join('\n\n')
+        : 'No memories found. This appears to be a fresh start.',
+      core: coreMemories.map(formatMemory),
+      recent: recentMemories.map(formatMemory),
+      contextual: contextMemories.map(formatMemory),
+      tip: totalCount === 0 
+        ? 'Use the "remember" tool to store important facts as you learn them.'
+        : 'Use "recall" to search for specific topics, or "remember" to store new information.',
     };
   }
 
