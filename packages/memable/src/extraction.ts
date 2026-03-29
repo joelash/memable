@@ -29,15 +29,21 @@ export interface ExtractionResult {
 
 const EXTRACTION_PROMPT = `You are a memory extraction system. Analyze the conversation and extract memorable information.
 
+IMPORTANT: Extract each distinct fact as a SEPARATE memory. Do NOT combine multiple facts into one memory.
+For example, "I'm a developer in Chicago who prefers Python" should become THREE separate memories:
+- "User is a developer" (fact)
+- "User is located in Chicago" (fact)  
+- "User prefers Python" (preference)
+
 For each piece of information worth remembering, identify:
-1. The fact/preference/decision/rule itself (clear, standalone statement)
+1. The fact/preference/decision/rule itself (ONE atomic piece of information per memory)
 2. The type: fact, preference, decision, rule, context, or observation
-3. Durability: core (permanent, like name/preferences), situational (temporary context), or episodic (one-time events)
+3. Durability: core (permanent, like name/location/preferences), situational (temporary context), or episodic (one-time events)
 4. Confidence (0-1): how certain you are this should be remembered
 
 Focus on:
 - User preferences and settings
-- Biographical information
+- Biographical information (name, location, job, experience)
 - Decisions and choices made
 - Rules or constraints mentioned
 - Important context for future conversations
