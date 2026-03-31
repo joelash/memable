@@ -187,9 +187,50 @@ Run `pytest tests/performance/ -v -s` to benchmark on your hardware.
 Environment variables:
 
 ```bash
-OPENAI_API_KEY=sk-...           # For embeddings
+# Embeddings (one of these)
+OPENAI_API_KEY=sk-...           # Use OpenAI embeddings
+MEMABLE_EMBEDDINGS=ollama       # Force Ollama (auto-detects by default)
+OLLAMA_HOST=http://localhost:11434  # Ollama server URL (optional)
+
+# Database
 DATABASE_URL=postgresql://...    # Postgres connection
 ```
+
+## Local Embeddings with Ollama
+
+For fully local operation without OpenAI, use [Ollama](https://ollama.ai):
+
+```bash
+# Install Ollama, then pull the embedding model
+ollama pull nomic-embed-text
+```
+
+memable auto-detects Ollama when no `OPENAI_API_KEY` is set:
+
+```python
+from memable import create_embeddings, build_store
+
+# Auto-detects: Ollama if available, else OpenAI if key set
+embeddings = create_embeddings()
+
+# Or force Ollama explicitly
+embeddings = create_embeddings(provider="ollama")
+
+# Use with store
+with build_store("sqlite:///memories.db", embeddings=embeddings) as store:
+    store.setup()
+    # ...
+```
+
+You can also use `OllamaEmbeddings` directly (LangChain-compatible):
+
+```python
+from memable import OllamaEmbeddings
+
+embeddings = OllamaEmbeddings(model="nomic-embed-text")
+```
+
+> **Note:** Don't mix embedding providers in the same database — vector dimensions differ (OpenAI: 1536, nomic-embed-text: 768).
 
 ## Multi-Tenant / Schema Isolation
 
