@@ -22,8 +22,14 @@ from memable.store import (
     build_sqlite_store,
     build_store,
 )
+from memable.embeddings import (
+    create_embeddings,
+    is_ollama_available,
+    has_ollama_model,
+    OllamaEmbeddings,
+)
 
-__version__ = "0.2.0"
+__version__ = "0.1.5"
 
 __all__ = [
     # Store factories
@@ -33,6 +39,11 @@ __all__ = [
     "build_duckdb_store",    # DuckDB / MotherDuck backend
     # Store class
     "SemanticMemoryStore",
+    # Embeddings
+    "create_embeddings",     # Auto-detect Ollama vs OpenAI
+    "is_ollama_available",   # Check if Ollama is running
+    "has_ollama_model",      # Check if embedding model installed
+    "OllamaEmbeddings",      # LangChain-compatible Ollama embeddings
     # Schema
     "Memory",
     "MemoryCreate",
