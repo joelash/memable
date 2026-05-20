@@ -32,6 +32,8 @@ export interface McpServerConfig {
   store: MemoryStore;
   /** Default namespace for memories (default: ['default']). */
   defaultNamespace?: string[];
+  /** Project-scoped namespace for the current repo (e.g. ['user', 'repos', 'myproject']). */
+  projectNamespace?: string[];
   /** Server name (default: 'engram-ai'). */
   name?: string;
   /** Server version (default: '0.1.0'). */
@@ -60,12 +62,14 @@ interface McpTool {
 export class McpServer {
   private store: MemoryStore;
   private namespace: string[];
+  private projectNamespace: string[] | undefined;
   private name: string;
   private version: string;
 
   constructor(config: McpServerConfig) {
     this.store = config.store;
     this.namespace = config.defaultNamespace ?? ['default'];
+    this.projectNamespace = config.projectNamespace;
     this.name = config.name ?? 'engram-ai';
     this.version = config.version ?? '0.1.0';
   }
@@ -278,7 +282,8 @@ export class McpServer {
       : undefined;
     const tags = args.tags as string[] | undefined;
 
-    const memory = await this.store.add(this.namespace, {
+    const targetNamespace = this.projectNamespace ?? this.namespace;
+    const memory = await this.store.add(targetNamespace, {
       text,
       memoryType: memoryType ? MemoryType[memoryType] : undefined,
       durability: durability ? Durability[durability] : undefined,
@@ -303,11 +308,29 @@ export class McpServer {
       ? (args.type as string).toUpperCase() as keyof typeof MemoryType
       : undefined;
 
-    const memories = await this.store.search(this.namespace, {
+    const searchOptions = {
       query,
       limit,
       memoryType: memoryType ? [MemoryType[memoryType]] : undefined,
-    });
+    };
+
+    let memories: Awaited<ReturnType<typeof this.store.search>>;
+
+    if (this.projectNamespace) {
+      // Search both namespaces and merge, project-specific first, deduped by ID
+      const [projectResults, globalResults] = await Promise.all([
+        this.store.search(this.projectNamespace, searchOptions),
+        this.store.search(this.namespace, searchOptions),
+      ]);
+      const seen = new Set<string>(projectResults.map((m) => m.id));
+      const merged = [
+        ...projectResults,
+        ...globalResults.filter((m) => !seen.has(m.id)),
+      ];
+      memories = merged.slice(0, limit);
+    } else {
+      memories = await this.store.search(this.namespace, searchOptions);
+    }
 
     return {
       count: memories.length,
@@ -446,33 +469,68 @@ export class McpServer {
       );
     }
 
-    // 4. Build summary sections
+    // 4. Load project-specific memories if projectNamespace is configured
+    let projectMemories: Awaited<ReturnType<typeof this.store.listAll>> = [];
+    if (this.projectNamespace) {
+      const allGlobalIds = new Set([
+        ...coreMemories.map((m) => m.id),
+        ...recentMemories.map((m) => m.id),
+        ...contextMemories.map((m) => m.id),
+      ]);
+
+      const projectAll = await this.store.listAll(this.projectNamespace);
+      let projectCandidates = projectAll.filter((m) => !allGlobalIds.has(m.id));
+
+      // If context provided, also search project namespace for relevant memories
+      if (context) {
+        const projectSearchResults = await this.store.search(this.projectNamespace, {
+          query: context,
+          limit: 5,
+        });
+        const seenProjectIds = new Set(projectCandidates.map((m) => m.id));
+        for (const m of projectSearchResults) {
+          if (!seenProjectIds.has(m.id) && !allGlobalIds.has(m.id)) {
+            projectCandidates.push(m);
+            seenProjectIds.add(m.id);
+          }
+        }
+      }
+
+      projectMemories = projectCandidates;
+    }
+
+    // 5. Build summary sections
     const sections: string[] = [];
-    
+
+    if (projectMemories.length > 0) {
+      sections.push(`## Project Context (${projectMemories.length} memories)\nMemories from the current repo.`);
+    }
+
     if (coreMemories.length > 0) {
       sections.push(`## Core Knowledge (${coreMemories.length} memories)\nThese are permanent facts you should always remember.`);
     }
-    
+
     if (recentMemories.length > 0) {
       sections.push(`## Recent Context (${recentMemories.length} memories)\nThings learned in the last 24 hours.`);
     }
-    
+
     if (contextMemories.length > 0) {
       sections.push(`## Relevant to "${context}" (${contextMemories.length} memories)\nMemories related to the current conversation topic.`);
     }
 
-    const totalCount = coreMemories.length + recentMemories.length + contextMemories.length;
+    const totalCount = projectMemories.length + coreMemories.length + recentMemories.length + contextMemories.length;
 
     return {
       booted: true,
       totalMemories: totalCount,
-      summary: totalCount > 0 
+      summary: totalCount > 0
         ? sections.join('\n\n')
         : 'No memories found. This appears to be a fresh start.',
+      project: projectMemories.map(formatMemory),
       core: coreMemories.map(formatMemory),
       recent: recentMemories.map(formatMemory),
       contextual: contextMemories.map(formatMemory),
-      tip: totalCount === 0 
+      tip: totalCount === 0
         ? 'Use the "remember" tool to store important facts as you learn them.'
         : 'Use "recall" to search for specific topics, or "remember" to store new information.',
     };

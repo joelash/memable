@@ -22,6 +22,7 @@
  */
 
 import { createInterface } from 'readline';
+import path from 'path';
 import { MemoryStore } from '../store.js';
 import { SQLiteMemoryStore } from '../sqlite-store.js';
 import { createEmbeddings, type EmbeddingProviderType } from '../embeddings.js';
@@ -269,9 +270,12 @@ async function runLocalMode() {
   await store.setup();
 
   const namespace = process.env.ENGRAM_NAMESPACE?.split(',') ?? ['default'];
+  const projectName = process.env.MEMABLE_PROJECT || path.basename(process.cwd());
+  const projectNamespace = ['user', 'repos', projectName];
   const server = new McpServer({
     store: store as MemoryStore,
     defaultNamespace: namespace,
+    projectNamespace,
   });
 
   runStdioLoop(async (message) => server.handleMessage(message));
