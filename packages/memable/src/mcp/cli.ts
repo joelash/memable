@@ -27,6 +27,7 @@ import { SQLiteMemoryStore } from '../sqlite-store.js';
 import { createEmbeddings, type EmbeddingProviderType } from '../embeddings.js';
 import { McpServer } from './index.js';
 import { isHostedMode, createHostedClient, HostedMcpClient } from './hosted-client.js';
+import { runExtractSession } from '../commands/extract-session.js';
 
 type AnyStore = MemoryStore | SQLiteMemoryStore;
 
@@ -327,6 +328,11 @@ function runStdioLoop(
 }
 
 async function main() {
+  if (process.argv[2] === 'extract-session') {
+    await runExtractSession();
+    process.exit(0);
+  }
+
   if (isHostedMode()) {
     await runHostedMode();
   } else {
