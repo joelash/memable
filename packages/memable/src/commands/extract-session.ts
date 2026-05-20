@@ -141,7 +141,7 @@ async function runHostedExtractSession(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-API-Key': process.env.MEMABLE_API_KEY!,
+        'X-API-Key': process.env.MEMABLE_API_KEY ?? '',
       },
       body: JSON.stringify({
         project_name: projectName,
@@ -184,34 +184,36 @@ async function runLocalExtractSession(
 
   await store.setup();
 
-  const result = await extractMemories(conversationText);
-  const namespace = ['user', 'repos', projectName];
+  try {
+    const result = await extractMemories(conversationText);
+    const namespace = ['user', 'repos', projectName];
 
-  let stored = 0;
-  for (const memory of result.memories) {
-    if (memory.confidence < 0.5) continue;
+    let stored = 0;
+    for (const memory of result.memories) {
+      if (memory.confidence < 0.5) continue;
 
-    await store.add(namespace, {
-      text: memory.text,
-      memoryType: memory.memoryType,
-      durability: memory.durability,
-      confidence: memory.confidence,
-      source: MemorySource.INFERRED,
-      metadata: {
-        source: 'claude-code',
-        project: projectName,
-        session_id: sessionId,
-      },
-    });
+      await store.add(namespace, {
+        text: memory.text,
+        memoryType: memory.memoryType,
+        durability: memory.durability,
+        confidence: memory.confidence,
+        source: MemorySource.INFERRED,
+        metadata: {
+          source: 'claude-code',
+          project: projectName,
+          session_id: sessionId,
+        },
+      });
 
-    stored++;
+      stored++;
+    }
+
+    console.error(`[memable] extract-session (local): extracted ${result.memories.length}, stored ${stored} memories`);
+  } finally {
+    if ('close' in store) {
+      (store as SQLiteMemoryStore).close();
+    }
   }
-
-  if ('close' in store) {
-    (store as SQLiteMemoryStore).close();
-  }
-
-  console.error(`[memable] extract-session (local): extracted ${result.memories.length}, stored ${stored} memories`);
 }
 
 /**
@@ -224,6 +226,7 @@ export async function runExtractSession(): Promise<void> {
     const payload = JSON.parse(raw.trim()) as StopHookPayload;
 
     const { transcript_path, cwd, session_id } = payload;
+    const sessionId = session_id ?? 'unknown';
 
     if (!transcript_path || !cwd) {
       console.error('[memable] extract-session: missing transcript_path or cwd in payload');
@@ -246,9 +249,9 @@ export async function runExtractSession(): Promise<void> {
 
     // 7/8. Store memories via hosted or local mode
     if (isHostedMode()) {
-      await runHostedExtractSession(conversationText, projectName, session_id, cwd);
+      await runHostedExtractSession(conversationText, projectName, sessionId, cwd);
     } else {
-      await runLocalExtractSession(conversationText, projectName, session_id);
+      await runLocalExtractSession(conversationText, projectName, sessionId);
     }
   } catch (error) {
     // 9. Log errors to stderr, exit 0 so hook doesn't surface errors to user
