@@ -13,6 +13,7 @@
 
 import { createReadStream } from 'fs';
 import { createInterface } from 'readline';
+import { randomUUID } from 'crypto';
 import path from 'path';
 import { isHostedMode, createHostedClient } from '../mcp/hosted-client.js';
 import { extractMemories } from '../extraction.js';
@@ -226,7 +227,7 @@ export async function runExtractSession(): Promise<void> {
     const payload = JSON.parse(raw.trim()) as StopHookPayload;
 
     const { transcript_path, cwd, session_id } = payload;
-    const sessionId = session_id ?? 'unknown';
+    const sessionId = session_id || randomUUID();
 
     if (!transcript_path || !cwd) {
       console.error('[memable] extract-session: missing transcript_path or cwd in payload');
