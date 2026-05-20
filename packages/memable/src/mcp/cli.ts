@@ -270,8 +270,22 @@ async function runLocalMode() {
   await store.setup();
 
   const namespace = process.env.ENGRAM_NAMESPACE?.split(',') ?? ['default'];
-  const projectName = process.env.MEMABLE_PROJECT || path.basename(process.cwd());
-  const projectNamespace = ['user', 'repos', projectName];
+  const explicitProject = process.env.MEMABLE_PROJECT;
+  let projectNamespace: string[] | undefined;
+
+  if (explicitProject) {
+    projectNamespace = ['user', 'repos', explicitProject];
+  } else {
+    // Only auto-enable project namespace when inside a git repo
+    try {
+      const { execSync } = await import('child_process');
+      execSync('git rev-parse --git-dir', { stdio: 'ignore', cwd: process.cwd() });
+      projectNamespace = ['user', 'repos', path.basename(process.cwd())];
+    } catch {
+      // Not a git repo — use global namespace only
+    }
+  }
+
   const server = new McpServer({
     store: store as MemoryStore,
     defaultNamespace: namespace,

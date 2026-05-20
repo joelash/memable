@@ -317,6 +317,8 @@ export class McpServer {
     let memories: Awaited<ReturnType<typeof this.store.search>>;
 
     if (this.projectNamespace) {
+      // Project memories take priority over global regardless of similarity score.
+      // This is intentional: context from the current repo is more likely to be relevant.
       // Search both namespaces and merge, project-specific first, deduped by ID
       const [projectResults, globalResults] = await Promise.all([
         this.store.search(this.projectNamespace, searchOptions),
@@ -345,7 +347,17 @@ export class McpServer {
   }
 
   private async handleListMemories(args: Record<string, unknown>) {
-    const memories = await this.store.listAll(this.namespace);
+    let memories: Awaited<ReturnType<typeof this.store.listAll>>;
+    if (this.projectNamespace) {
+      const [projectMemories, globalMemories] = await Promise.all([
+        this.store.listAll(this.projectNamespace),
+        this.store.listAll(this.namespace),
+      ]);
+      const seen = new Set(projectMemories.map((m) => m.id));
+      memories = [...projectMemories, ...globalMemories.filter((m) => !seen.has(m.id))];
+    } else {
+      memories = await this.store.listAll(this.namespace);
+    }
 
     // Filter in JS
     let filtered = memories;
@@ -373,7 +385,10 @@ export class McpServer {
 
   private async handleForget(args: Record<string, unknown>) {
     const id = args.id as string;
-    const deleted = await this.store.delete(this.namespace, id);
+    const deleted = this.projectNamespace
+      ? (await this.store.delete(this.projectNamespace, id)) ||
+        (await this.store.delete(this.namespace, id))
+      : await this.store.delete(this.namespace, id);
 
     return {
       success: deleted,
