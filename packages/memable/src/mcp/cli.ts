@@ -22,11 +22,13 @@
  */
 
 import { createInterface } from 'readline';
+import path from 'path';
 import { MemoryStore } from '../store.js';
 import { SQLiteMemoryStore } from '../sqlite-store.js';
 import { createEmbeddings, type EmbeddingProviderType } from '../embeddings.js';
 import { McpServer } from './index.js';
 import { isHostedMode, createHostedClient, HostedMcpClient } from './hosted-client.js';
+import { runExtractSession } from '../commands/extract-session.js';
 
 type AnyStore = MemoryStore | SQLiteMemoryStore;
 
@@ -268,9 +270,26 @@ async function runLocalMode() {
   await store.setup();
 
   const namespace = process.env.ENGRAM_NAMESPACE?.split(',') ?? ['default'];
+  const explicitProject = process.env.MEMABLE_PROJECT;
+  let projectNamespace: string[] | undefined;
+
+  if (explicitProject) {
+    projectNamespace = ['user', 'repos', explicitProject];
+  } else {
+    // Only auto-enable project namespace when inside a git repo
+    try {
+      const { execSync } = await import('child_process');
+      execSync('git rev-parse --git-dir', { stdio: 'ignore', cwd: process.cwd() });
+      projectNamespace = ['user', 'repos', path.basename(process.cwd())];
+    } catch {
+      // Not a git repo — use global namespace only
+    }
+  }
+
   const server = new McpServer({
     store: store as MemoryStore,
     defaultNamespace: namespace,
+    projectNamespace,
   });
 
   runStdioLoop(async (message) => server.handleMessage(message));
@@ -327,6 +346,11 @@ function runStdioLoop(
 }
 
 async function main() {
+  if (process.argv[2] === 'extract-session') {
+    await runExtractSession();
+    process.exit(0);
+  }
+
   if (isHostedMode()) {
     await runHostedMode();
   } else {

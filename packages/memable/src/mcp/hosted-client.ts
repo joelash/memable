@@ -165,6 +165,7 @@ export class HostedMcpClient {
       method: 'POST',
       body: JSON.stringify({
         messages: [{ role: 'user', content: args.conversation }],
+        store: args.store ?? true,
       }),
     });
 
