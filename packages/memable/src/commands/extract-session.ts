@@ -165,8 +165,9 @@ async function runHostedExtractSession(
  */
 async function runLocalExtractSession(
   conversationText: string,
-  projectName: string,
-  sessionId: string
+  projectName: string | undefined,
+  sessionId: string,
+  cwd: string
 ): Promise<void> {
   const providerType = (process.env.MEMABLE_EMBEDDINGS as EmbeddingProviderType) || 'auto';
 
@@ -187,7 +188,9 @@ async function runLocalExtractSession(
 
   try {
     const result = await extractMemories(conversationText);
-    const namespace = ['user', 'repos', projectName];
+    const namespace = projectName
+      ? ['user', 'repos', projectName]
+      : ['user', 'projects', path.basename(cwd)];
 
     let stored = 0;
     for (const memory of result.memories) {
@@ -201,7 +204,7 @@ async function runLocalExtractSession(
         source: MemorySource.INFERRED,
         metadata: {
           source: 'claude-code',
-          project: projectName,
+          ...(projectName ? { project: projectName } : {}),
           session_id: sessionId,
         },
       });
@@ -246,13 +249,27 @@ export async function runExtractSession(): Promise<void> {
     }
 
     // 6. Derive project name
-    const projectName = process.env.MEMABLE_PROJECT || path.basename(cwd);
+    let projectName: string | undefined;
+    if (process.env.MEMABLE_PROJECT) {
+      projectName = process.env.MEMABLE_PROJECT;
+    } else if (isHostedMode()) {
+      projectName = path.basename(cwd);
+    } else {
+      // Local mode: only scope to project namespace if cwd is a git repo
+      try {
+        const { execFileSync } = await import('child_process');
+        execFileSync('git', ['rev-parse', '--git-dir'], { stdio: 'ignore', cwd });
+        projectName = path.basename(cwd);
+      } catch {
+        // Not a git repo — store in global namespace
+      }
+    }
 
     // 7/8. Store memories via hosted or local mode
     if (isHostedMode()) {
-      await runHostedExtractSession(conversationText, projectName, sessionId, cwd);
+      await runHostedExtractSession(conversationText, projectName ?? path.basename(cwd), sessionId, cwd);
     } else {
-      await runLocalExtractSession(conversationText, projectName, sessionId);
+      await runLocalExtractSession(conversationText, projectName, sessionId, cwd);
     }
   } catch (error) {
     // 9. Log errors to stderr, exit 0 so hook doesn't surface errors to user

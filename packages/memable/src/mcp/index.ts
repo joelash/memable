@@ -416,9 +416,10 @@ export class McpServer {
     const storedMemories: Array<{ id: string; text: string; type: string; durability: string }> = [];
 
     if (shouldStore) {
+      const targetNamespace = this.projectNamespace ?? this.namespace;
       const memoryCreates = toMemoryCreates(result.memories);
       for (const create of memoryCreates) {
-        const memory = await this.store.add(this.namespace, create);
+        const memory = await this.store.add(targetNamespace, create);
         storedMemories.push({
           id: memory.id,
           text: memory.text,
@@ -494,7 +495,7 @@ export class McpServer {
       ]);
 
       const projectAll = await this.store.listAll(this.projectNamespace);
-      let projectCandidates = projectAll.filter((m) => !allGlobalIds.has(m.id));
+      let projectCandidates = projectAll.filter((m) => !allGlobalIds.has(m.id)).slice(0, 20);
 
       // If context provided, also search project namespace for relevant memories
       if (context) {
