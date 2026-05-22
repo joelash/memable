@@ -59,18 +59,23 @@ Extract facts that are:
 - Stable enough to be useful later
 - Not just transient conversation (greetings, acknowledgments)
 
+Writing style for memory text:
+- Write in second person ("Prefers TypeScript strict mode", "Working on auth refactor") — NOT "User prefers..." or "The user..."
+- Include enough detail to be useful without the original conversation. A memory like "Decided to use LangGraph" is weak; "Decided to use LangGraph for the agent framework because it handles state persistence better than raw function chaining" is strong.
+- Use markdown when it adds clarity: inline code for identifiers, short lists for multi-part facts, etc.
+
 For each fact, classify its durability:
 - "core": Stable facts that rarely change (name, location, job, strong preferences)
 - "situational": Temporary context with a natural end (trips, projects, temporary states)
 - "episodic": Things that happened or were discussed (meetings, decisions, events)
 
 Also classify the semantic memory_type:
-- "fact": A factual statement (e.g., "API rate limit is 100/min", "User lives in Chicago")
+- "fact": A factual statement (e.g., "API rate limit is 100/min", "Lives in Chicago")
 - "rule": A rule or guideline to follow (e.g., "Always use TypeScript strict mode")
 - "decision": A decision that was made (e.g., "Chose Tailwind for utility-first CSS")
 - "preference": A preference or like/dislike (e.g., "Prefers dark mode", "Dislikes meetings before 10am")
 - "context": Background context (e.g., "Currently working on authentication refactor")
-- "observation": An observation or insight (e.g., "User tends to ask follow-up questions")
+- "observation": An observation or insight (e.g., "Tends to ask follow-up questions after seeing code")
 
 For situational facts, estimate how many days until they expire (valid_days).
 
@@ -78,7 +83,7 @@ Return a JSON object with this structure:
 {
   "facts": [
     {
-      "text": "User's name is Joel",
+      "text": "Name is Joel",
       "durability": "core",
       "memory_type": "fact",
       "confidence": 0.95,
@@ -87,7 +92,7 @@ Return a JSON object with this structure:
       "reasoning": "Explicit self-identification"
     },
     {
-      "text": "User prefers Fahrenheit over Celsius",
+      "text": "Prefers Fahrenheit over Celsius",
       "durability": "core",
       "memory_type": "preference",
       "confidence": 0.9,
@@ -96,13 +101,13 @@ Return a JSON object with this structure:
       "reasoning": "Explicit preference statement"
     },
     {
-      "text": "Decided to use LangGraph for the agent framework",
+      "text": "Decided to use LangGraph for the agent framework because it handles state persistence better than raw function chaining",
       "durability": "situational",
       "memory_type": "decision",
       "confidence": 0.85,
       "valid_days": 90,
       "category": "technical",
-      "reasoning": "Project-level technical decision"
+      "reasoning": "Project-level technical decision with stated rationale"
     }
   ]
 }
