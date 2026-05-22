@@ -31,9 +31,14 @@ const EXTRACTION_PROMPT = `You are a memory extraction system. Analyze the conve
 
 IMPORTANT: Extract each distinct fact as a SEPARATE memory. Do NOT combine multiple facts into one memory.
 For example, "I'm a developer in Chicago who prefers Python" should become THREE separate memories:
-- "User is a developer" (fact)
-- "User is located in Chicago" (fact)  
-- "User prefers Python" (preference)
+- "Is a developer" (fact)
+- "Located in Chicago" (fact)
+- "Prefers Python over other languages" (preference)
+
+Writing style:
+- Write in second person, omitting the subject — NOT "User prefers..." or "The user is..."
+- Include enough detail to be useful without the original conversation. "Decided to use LangGraph" is weak; "Decided to use LangGraph for the agent framework because it handles state persistence better than raw function chaining" is strong.
+- Use markdown when it adds clarity: inline code for identifiers/commands, short lists for multi-part facts.
 
 For each piece of information worth remembering, identify:
 1. The fact/preference/decision/rule itself (ONE atomic piece of information per memory)
@@ -42,9 +47,9 @@ For each piece of information worth remembering, identify:
 4. Confidence (0-1): how certain you are this should be remembered
 
 Focus on:
-- User preferences and settings
+- Preferences and settings
 - Biographical information (name, location, job, experience)
-- Decisions and choices made
+- Decisions and choices made, with rationale when available
 - Rules or constraints mentioned
 - Important context for future conversations
 
@@ -56,7 +61,7 @@ Skip:
 Respond with a JSON array of extracted memories:
 [
   {
-    "text": "User prefers dark mode",
+    "text": "Prefers dark mode across all tools",
     "memoryType": "preference",
     "durability": "core",
     "confidence": 0.95,
