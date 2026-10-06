@@ -6,6 +6,12 @@ Supports multiple backends:
 - SQLite with sqlite-vec (development/testing)
 """
 
+from memable.embeddings import (
+    OllamaEmbeddings,
+    create_embeddings,
+    has_ollama_model,
+    is_ollama_available,
+)
 from memable.schema import (
     Durability,
     Memory,
@@ -22,12 +28,6 @@ from memable.store import (
     build_postgres_store,
     build_sqlite_store,
     build_store,
-)
-from memable.embeddings import (
-    create_embeddings,
-    is_ollama_available,
-    has_ollama_model,
-    OllamaEmbeddings,
 )
 
 __version__ = "0.2.0"

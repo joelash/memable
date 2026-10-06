@@ -4,8 +4,8 @@ PostgreSQL backend using LangGraph's PostgresStore with pgvector.
 
 import logging
 import os
-from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 from typing import TYPE_CHECKING, Any
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from langgraph.store.postgres import PostgresStore
 

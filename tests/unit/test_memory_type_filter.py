@@ -2,7 +2,10 @@
 Unit tests for memory_type filtering in store search.
 """
 
+import hashlib
+
 import pytest
+from langchain_core.embeddings import Embeddings
 
 from memable import (
     MemoryCreate,
@@ -13,10 +16,30 @@ from memable import (
 )
 
 
+class _FakeEmbeddings(Embeddings):
+    """Deterministic, offline embeddings so these tests don't need OPENAI_API_KEY."""
+
+    def __init__(self, size: int = 1536):
+        self.size = size
+
+    def _embed(self, text: str) -> list[float]:
+        digest = hashlib.sha256(text.encode()).digest()
+        return [digest[i % len(digest)] / 255.0 for i in range(self.size)]
+
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        return [self._embed(t) for t in texts]
+
+    def embed_query(self, text: str) -> list[float]:
+        return self._embed(text)
+
+
 @pytest.fixture
 def store_with_typed_memories():
     """Create a store with memories of different types."""
-    with build_sqlite_store(":memory:") as store:
+    # Fake embeddings: these tests exercise metadata filtering, not semantic
+    # ranking, so they must not need OPENAI_API_KEY (CI unit job has none).
+    embeddings = _FakeEmbeddings()
+    with build_sqlite_store(":memory:", embeddings=embeddings) as store:
         store.setup()
         namespace = ("test_user", "memories")
         
