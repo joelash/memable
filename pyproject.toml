@@ -52,11 +52,11 @@ dev = [
     "twine>=5.0.0",
 ]
 all = [
-    "memento-ai[sqlite,duckdb,dev]",
+    "memable[sqlite,duckdb,dev]",
 ]
 
 [project.urls]
-Repository = "https://github.com/joelash/memento-ai"
+Repository = "https://github.com/joelash/memable"
 
 [tool.hatch.build.targets.sdist]
 exclude = [
@@ -95,6 +95,10 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+# Long lines here are LLM prompt text; wrapping them would change the prompt.
+"src/memable/extraction.py" = ["E501"]
 
 [tool.mypy]
 python_version = "3.11"
