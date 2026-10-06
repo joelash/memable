@@ -52,11 +52,11 @@ dev = [
     "twine>=5.0.0",
 ]
 all = [
-    "memento-ai[sqlite,duckdb,dev]",
+    "memable[sqlite,duckdb,dev]",
 ]
 
 [project.urls]
-Repository = "https://github.com/joelash/memento-ai"
+Repository = "https://github.com/joelash/memable"
 
 [tool.hatch.build.targets.sdist]
 exclude = [

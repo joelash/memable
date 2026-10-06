@@ -1,10 +1,13 @@
 """
-memento-ai: Reusable semantic memory for LangGraph agents.
+memable: Reusable semantic memory for LangGraph agents.
 
 Supports multiple backends:
 - PostgreSQL with pgvector (production)
 - SQLite with sqlite-vec (development/testing)
 """
+
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _pkg_version
 
 from memable.embeddings import (
     OllamaEmbeddings,
@@ -30,7 +33,10 @@ from memable.store import (
     build_store,
 )
 
-__version__ = "0.2.0"
+try:
+    __version__ = _pkg_version("memable")
+except PackageNotFoundError:  # pragma: no cover - running from a source tree
+    __version__ = "0.0.0"
 
 __all__ = [
     # Store factories
