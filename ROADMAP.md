@@ -1,26 +1,36 @@
 # Roadmap
 
-Ideas and planned features for memento-ai.
+Ideas and planned features for memable.
 
-## v0.2.0 — Batch & Async
+## Shipped (not originally on this roadmap)
+
+- [x] **SQLite backend** (sqlite-vec) — #1
+- [x] **DuckDB backend**
+- [x] **Configurable LLM** for extraction and contradiction detection — #2
+- [x] **Schema-based tenant isolation** for PostgreSQL — #3
+- [x] **Audit fields, patch API, metadata filtering** — #5
+- [x] **TypeScript package + MCP server** (local and hosted mode) — `packages/memable`
+- [x] **Claude Code integration** (Stop hook, `extract-session`, project namespacing) — #6, #7
+
+## Next — Batch & Async
 
 - [ ] **Batch operations** — `add_many()`, `delete_many()`, `search_many()`
-- [ ] **Async-first API** — Full async support (`async with build_postgres_store()`)
-- [ ] **TTL auto-cleanup** — Background job to prune expired memories
+- [ ] **Async-first API** — Full async support (`async with build_postgres_store()`) _(partial: async LangGraph nodes, `aextract`, `acheck`; store is still sync)_
+- [ ] **TTL auto-cleanup** — Background job to prune expired memories _(partial: `prune_expired` consolidation strategy exists; no background job)_
 
-## v0.3.0 — Knowledge Graph
+## Later — Knowledge Graph
 
 - [ ] **Entity extraction** — Extract entities and relationships from memories
 - [ ] **Relationship storage** — `Joel → works_at → Aclaimant` style triples
 - [ ] **Graph queries** — "What do I know about Joel's work?"
 - [ ] **Mem0-style API** — Compatibility layer for Mem0 users
 
-## v0.4.0 — Intelligence
+## Later — Intelligence
 
 - [ ] **Importance scoring** — Beyond confidence, track salience/relevance
 - [ ] **Memory reflection** — Periodic self-review and insight generation
 - [ ] **Conflict resolution UI** — Surface contradictions for human review
-- [ ] **Memory provenance** — Track which conversation/source created each memory
+- [ ] **Memory provenance** — Track which conversation/source created each memory _(partial: `created_by`/`updated_by` audit fields + free-form `metadata`, #5)_
 
 ## Future / Maybe
 
@@ -29,7 +39,7 @@ Ideas and planned features for memento-ai.
 - [ ] **Export/import** — Backup, migration, portability
 - [ ] **Hooks/callbacks** — For logging, monitoring, custom logic
 - [ ] **Rate limiting** — Built-in OpenAI call management
-- [ ] **Local embeddings** — Sentence-transformers fallback (no API needed)
+- [x] **Local embeddings** — No API needed (shipped via Ollama `nomic-embed-text`, not sentence-transformers)
 
 ## Docs Improvements
 
