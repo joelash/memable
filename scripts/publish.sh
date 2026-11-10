@@ -106,12 +106,13 @@ python3 -m build
 echo ""
 echo -e "${GREEN}Publishing to PyPI...${NC}"
 echo -e "${YELLOW}(You may be prompted for PyPI credentials)${NC}"
-twine upload dist/*
+twine upload --skip-existing dist/*
 
 echo ""
 # Build and publish npm
 echo -e "${GREEN}Building npm package...${NC}"
 cd packages/memable
+npm ci
 npm run build
 
 echo ""
