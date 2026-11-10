@@ -4,7 +4,7 @@ PostgreSQL backend using LangGraph's PostgresStore with pgvector.
 
 import logging
 import os
-from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
+from urllib.parse import parse_qs, quote, urlencode, urlparse, urlunparse
 from typing import TYPE_CHECKING, Any
 
 from langgraph.store.postgres import PostgresStore
@@ -53,7 +53,10 @@ def _add_schema_to_conn_string(conn_str: str, schema: str) -> str:
         query_params["options"] = [search_path_option]
 
     # Rebuild the URL
-    new_query = urlencode(query_params, doseq=True)
+    # quote, not urlencode's default quote_plus: libpq decodes %20 but keeps
+    # "+" literally, so "-c+search_path=..." would reach the server as an
+    # unknown parameter "+search_path".
+    new_query = urlencode(query_params, doseq=True, quote_via=quote)
     new_parsed = parsed._replace(query=new_query)
     return urlunparse(new_parsed)
 

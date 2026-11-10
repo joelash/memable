@@ -55,6 +55,31 @@ class TestAddSchemaToConnString:
 
         assert "customer_data_2024" in result
 
+    def test_libpq_reads_the_option_as_written(self):
+        """libpq decodes %XX in a URI but keeps "+" literally, so a space
+        encoded as "+" reaches Postgres as "-c+search_path=..." and the
+        server rejects the unknown parameter "+search_path"."""
+        from psycopg.conninfo import conninfo_to_dict
+
+        conn = "postgresql://user:pass@host/db?sslmode=require"
+        result = _add_schema_to_conn_string(conn, "mapping_memory")
+
+        assert "+" not in result
+        params = conninfo_to_dict(result)
+        assert params["options"] == "-c search_path=mapping_memory"
+        assert params["sslmode"] == "require"
+
+    def test_existing_options_survive_as_libpq_reads_them(self):
+        """Merging keeps the existing option and joins with a real space."""
+        from psycopg.conninfo import conninfo_to_dict
+
+        conn = "postgresql://user:pass@host/db?options=-c%20statement_timeout%3D5000"
+        result = _add_schema_to_conn_string(conn, "my_schema")
+
+        assert conninfo_to_dict(result)["options"] == (
+            "-c statement_timeout=5000 -c search_path=my_schema"
+        )
+
     def test_postgres_scheme(self):
         """Test with postgres:// (shorter alias) scheme."""
         conn = "postgres://user:pass@host/db"
