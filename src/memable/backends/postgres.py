@@ -240,10 +240,11 @@ class PostgresBackend(BaseStore):
         namespace: tuple[str, ...],
         query: str | None,
         limit: int = 10,
+        offset: int = 0,
     ) -> list[StoreItem]:
         """Semantic search using pgvector."""
         store = self._ensure_connected()
-        results = store.search(namespace, query=query, limit=limit)
+        results = store.search(namespace, query=query, limit=limit, offset=offset)
         return [
             StoreItem(
                 key=r.key,

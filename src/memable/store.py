@@ -27,6 +27,9 @@ from memable.schema import (
 if TYPE_CHECKING:
     from langchain_core.embeddings import Embeddings
 
+# Page size for list_all's walk through a namespace.
+_LIST_PAGE_SIZE = 1000
+
 
 @contextmanager
 def build_store(
@@ -688,11 +691,21 @@ class SemanticMemoryStore:
         Returns:
             List of memories.
         """
-        results = self._store.search(
-            namespace,
-            query=None,  # None to get all without vector search
-            limit=1000,
-        )
+        # Page through the namespace: one search caps at a page, so a single
+        # call would silently drop everything past it.
+        results = []
+        offset = 0
+        while True:
+            page = self._store.search(
+                namespace,
+                query=None,  # None to get all without vector search
+                limit=_LIST_PAGE_SIZE,
+                offset=offset,
+            )
+            results.extend(page)
+            if len(page) < _LIST_PAGE_SIZE:
+                break
+            offset += _LIST_PAGE_SIZE
 
         memories: list[Memory] = []
         now = datetime.now(UTC)
