@@ -91,6 +91,7 @@ class BaseStore(ABC):
         namespace: tuple[str, ...],
         query: str | None,
         limit: int = 10,
+        offset: int = 0,
     ) -> list[StoreItem]:
         """
         Search for items, optionally with vector similarity.
@@ -99,6 +100,8 @@ class BaseStore(ABC):
             namespace: Hierarchical namespace tuple.
             query: Search query for semantic search, or None to list all.
             limit: Maximum results to return.
+            offset: Number of results to skip, for paging. Listing (query=None)
+                returns items in a stable order, so pages don't overlap.
 
         Returns:
             List of matching items, ordered by relevance.

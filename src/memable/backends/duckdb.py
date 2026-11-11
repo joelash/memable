@@ -189,6 +189,7 @@ class DuckDBBackend(BaseStore):
         namespace: tuple[str, ...],
         query: str | None,
         limit: int = 10,
+        offset: int = 0,
     ) -> list[StoreItem]:
         """Search with optional vector similarity."""
         conn = self._ensure_connected()
@@ -197,8 +198,9 @@ class DuckDBBackend(BaseStore):
         if query is None:
             # List all in namespace
             results = conn.execute(
-                "SELECT key, value FROM memories WHERE namespace = ? LIMIT ?",
-                [ns_str, limit]
+                "SELECT key, value FROM memories WHERE namespace = ?"
+                " ORDER BY key LIMIT ? OFFSET ?",
+                [ns_str, limit, offset]
             ).fetchall()
             return [
                 StoreItem(
@@ -221,8 +223,8 @@ class DuckDBBackend(BaseStore):
             FROM memories
             WHERE namespace = ?
             ORDER BY similarity DESC
-            LIMIT ?
-        """, [query_embedding, ns_str, limit]).fetchall()
+            LIMIT ? OFFSET ?
+        """, [query_embedding, ns_str, limit, offset]).fetchall()
 
         return [
             StoreItem(

@@ -247,6 +247,7 @@ class SQLiteBackend(BaseStore):
         namespace: tuple[str, ...],
         query: str | None,
         limit: int = 10,
+        offset: int = 0,
     ) -> list[StoreItem]:
         """Search with optional vector similarity."""
         conn = self._ensure_connected()
@@ -255,8 +256,9 @@ class SQLiteBackend(BaseStore):
         if query is None:
             # List all in namespace
             rows = conn.execute(
-                "SELECT key, value FROM memories WHERE namespace = ? LIMIT ?",
-                (ns_str, limit)
+                "SELECT key, value FROM memories WHERE namespace = ?"
+                " ORDER BY key LIMIT ? OFFSET ?",
+                (ns_str, limit, offset)
             ).fetchall()
             return [
                 StoreItem(
@@ -281,7 +283,7 @@ class SQLiteBackend(BaseStore):
                 AND v.embedding MATCH ?
                 ORDER BY v.distance
                 LIMIT ?
-            """, (ns_str, query_blob, limit)).fetchall()
+            """, (ns_str, query_blob, limit + offset)).fetchall()[offset:]
 
             return [
                 StoreItem(
@@ -324,7 +326,7 @@ class SQLiteBackend(BaseStore):
                     namespace=namespace,
                     score=score,
                 )
-                for row, score in results[:limit]
+                for row, score in results[offset:offset + limit]
             ]
 
     def close(self) -> None:
